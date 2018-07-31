@@ -1,8 +1,10 @@
+import math
 import numpy as np
 from PIL import Image
 
+
 def generateHadamard(N):
-	hadmard = np.asarray([[1,1],[1,-1]])
+	hadmard = np.asarray([[1.0,1.0],[1.0,-1.0]])
 	if (N != 1):
 		hadamard_copy = hadmard.copy()
 		for i in range (1, N):
@@ -31,18 +33,45 @@ def sequence(hadamardArray):
 	return hadamardArray[index]
 
 
+def get_ycbcr_array(name: str):
+    pil_img = Image.open('../images/'+name)
+    pil_y, pil_cr, pil_cb = pil_img.convert("YCbCr").split()
+    y = np.asarray(pil_y)
+    cr = np.asarray(pil_cr)
+    cb = np.asarray(pil_cb)
+    y.flags.writeable = True
+    cr.flags.writeable = True
+    cb.flags.writeable = True
+    return [y, cr, cb]
+    # return np.array([y,cr,cb])
+
+
 def main():
+	imgname = 'lena256.bmp'
+	img = np.array(Image.open('../images/' + imgname), 'f')
+	gray_img = Image.fromarray(np.uint8(img)).convert('L')
+	gray_img_f = np.array(gray_img, 'f')
+	img_y, cb, cr = get_ycbcr_array(imgname)
+
 	# N -> 2**N
-	N = 4
-	# hadamard = generateHadamard(N)
-	# print(sequence(generateHadamard(N)))
+	N = int(math.log(len(gray_img_f), 2))
+	hadamard = sequence(generateHadamard(N))
+
+	# G = (hadamard*img_y*hadamard)/math.sqrt(2**N)
+	a = np.dot(hadamard, img_y)
+	G = np.dot(a, hadamard)/ 2**N
+
+	# rev = (hadamard*G*hadamard)*math.sqrt(2**N)
+	b = np.dot(hadamard, G)
+	rev = np.dot(b, hadamard)/ 2**N
+
+	print(G)
+
+	print(rev)
 
 
-	# 画像を読み込み，グレースケールに変換する
-	# 画像の大きさに合わせたアダマール行列を生成する
-	# アダマール行列とグレースケールに変換した画像の輝度値に対してアダマール変換を行う
-	# 変換後の画像を表示する
-	# アダマール行列と変換後の画像を用いて逆変換を行う
+	Image.fromarray(np.uint8(rev)).show()
+
 
 
 
