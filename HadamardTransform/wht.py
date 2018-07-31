@@ -1,9 +1,10 @@
 import math
+import sys
 import numpy as np
 from PIL import Image
 
 
-def generateHadamard(N):
+def generate_hadamard(N):
 	hadmard = np.asarray([[1.0,1.0],[1.0,-1.0]])
 	if (N != 1):
 		hadamard_copy = hadmard.copy()
@@ -34,40 +35,53 @@ def sequence(hadamardArray):
 
 
 def get_ycbcr_array(name: str):
-    pil_img = Image.open('../images/'+name)
-    pil_y, pil_cr, pil_cb = pil_img.convert("YCbCr").split()
-    y = np.asarray(pil_y)
-    cr = np.asarray(pil_cr)
-    cb = np.asarray(pil_cb)
-    y.flags.writeable = True
-    cr.flags.writeable = True
-    cb.flags.writeable = True
-    return [y, cr, cb]
-    # return np.array([y,cr,cb])
+	pil_img = Image.open('../images/'+name)
+	pil_y, pil_cr, pil_cb = pil_img.convert("YCbCr").split()
+	y = np.asarray(pil_y)
+	cr = np.asarray(pil_cr)
+	cb = np.asarray(pil_cb)
+	y.flags.writeable = True
+	cr.flags.writeable = True
+	cb.flags.writeable = True
+	return [y, cr, cb]
+	# return np.array([y,cr,cb])
+
+
+def size_check(length: int, height: int):
+	if length != height :
+		print('The image must be square.')
+		sys.exit(1)
+	# (n & (n - 1)) == 0　なら2のべき乗 ->ビット演算で高速化可能
+	while (((length % 2) == 0) and length > 1):
+		length /= 2
+
+	if length != 1:
+		print('Size must be a power of 2.')
+		sys.exit(1)
 
 
 def main():
-	imgname = 'lena256.bmp'
+	imgname = 'lena512.bmp'
 	img = np.array(Image.open('../images/' + imgname), 'f')
-	gray_img = Image.fromarray(np.uint8(img)).convert('L')
-	gray_img_f = np.array(gray_img, 'f')
-	img_y, cb, cr = get_ycbcr_array(imgname)
+	img_y, img_cb, img_cr = get_ycbcr_array(imgname)
+	size = len(img)
+
+	# 2のべき乗かつ画像が正方形であるかどうかのチェック
+	size_check(size, len(img[0]))
+
 
 	# N -> 2**N
-	N = int(math.log(len(gray_img_f), 2))
-	hadamard = sequence(generateHadamard(N))
+	N = int(math.log(size, 2))
+	hadamard = sequence(generate_hadamard(N))
 
-	# G = (hadamard*img_y*hadamard)/math.sqrt(2**N)
 	a = np.dot(hadamard, img_y)
-	G = np.dot(a, hadamard)/ 2**N
+	G = np.dot(a, hadamard) / 2**N
 
-	# rev = (hadamard*G*hadamard)*math.sqrt(2**N)
+	# G[200:512, 200:512] = 0.0
+	# G[500:512, 500:512] = 100.0
+
 	b = np.dot(hadamard, G)
-	rev = np.dot(b, hadamard)/ 2**N
-
-	print(G)
-
-	print(rev)
+	rev = np.dot(b, hadamard) / 2**N
 
 
 	Image.fromarray(np.uint8(rev)).show()
