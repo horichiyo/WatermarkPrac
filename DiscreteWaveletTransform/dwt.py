@@ -34,7 +34,7 @@ def list_to_textfile(lst, name):
 
 
 def main():
-    imgname = 'blena512.bmp'
+    imgname = 'balls_square.JPG'
     wavelet = 'db1' # wavelist.txtにどれを指定できるか書いてある
     level = 1
 
@@ -42,21 +42,23 @@ def main():
     gray_img = Image.fromarray(np.uint8(img)).convert('L')
 
     # Wavelet変換
-    coeffs = pywt.wavedec2(gray_img,wavelet=wavelet,level=level)
-    coeffs_show(coeffs)
+    # coeffs = pywt.wavedec2(gray_img,wavelet=wavelet,level=level) #wavedec2 [cAn, (cHn, cVn, cDn), … (cH1, cV1, cD1)] : list  are return.
+    # coeffs_show(coeffs)
 
-    # 複数回ウェーブレットを行いたい場合（検討中）
-    # coeffs = pywt.dwt2(gray_img, wavelet=wavelet)
-    # cA, (cH,cV,cD) = coeffs
-    # 電子透かしで高周波成分を操作する場合cH_V_Dのどれかを選択する
-    # coeffs_show(coeffs)
-    # coeffs = pywt.dwt2(cA, wavelet=wavelet)
-    # coeffs_show(coeffs)
+    # 別Ver（1度のウェーブレットのビット置換）
+    coeffs = pywt.dwt2(gray_img, wavelet=wavelet)
+    cA, (cH,cV,cD) = coeffs
+    # 電子透かしで高周波成分を操作する場合cH_V_Dのどれかを選択する(半分のピクセル数になる)とりあえずcDを全部0にしてみる
+    cD_a = np.full_like(cD, 0.000)
+    coeffs_a = cA, (cH,cV,cD_a)
+
+    coeffs_show(coeffs)
+    coeffs_show(coeffs_a)
 
 
     # 復調
-    # tmp = pywt.waverec2(coeffs, wavelet=wavelet)
-    # Image.fromarray(np.uint8(tmp)).show()
+    tmp = pywt.waverec2(coeffs_a, wavelet=wavelet)
+    Image.fromarray(np.uint8(tmp)).show()
 
 
 
