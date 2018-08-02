@@ -3,9 +3,9 @@ import sys
 import numpy as np
 from PIL import Image
 
-outimgpath = '../images/result/'
-imgpath = '../images/'
-imgname = 'lena512.bmp'
+outImgPath = '../images/result/'
+imgPath    = '../images/'
+imgName    = 'lena512.bmp'
 
 
 def generateHadamard(N):
@@ -38,8 +38,8 @@ def sequence(hadamardArray):
 	return hadamardArray[index]
 
 
-def getYcbcrArray(name: str):
-	pil_img = Image.open(imgpath+name)
+def getYcbcrArray(name):
+	pil_img = Image.open(imgPath+name)
 	pil_y, pil_cr, pil_cb = pil_img.convert('YCbCr').split()
 	y = np.asarray(pil_y)
 	cr = np.asarray(pil_cr)
@@ -55,28 +55,30 @@ def saveYcbcrAsImg(name: str, y, cr, cb):
 	pil_cr = Image.fromarray(np.uint8(cr))
 	pil_cb = Image.fromarray(np.uint8(cb))
 	pil_img = Image.merge('YCbCr', (pil_y, pil_cr, pil_cb)).convert('RGB')
-	pil_img.save(outimgpath+name)
+	pil_img.save(outImgPath+name)
 
 
-def sizeCheck(length: int, height: int):
+def sizeCheck(width: int, height: int):
 	# 2のべき乗かどうか判断して2のべき乗かつ画像の縦横が等しくなければ終了 等しければ2のN乗になってるかを返す
-	if length != height :
+	if width != height :
 		print('The image must be square.')
 		sys.exit(1)
 
 	# (n & (n - 1)) == 0　なら2のべき乗 -> ビット演算で高速化可能
-	while (((length % 2) == 0) and length > 1):
-		length /= 2
+	while (((width % 2) == 0) and width > 1):
+		width /= 2
 
-	if length != 1:
+	if width != 1:
 		print('Size must be a power of 2.')
 		sys.exit(1)
 
 	return int(math.log(height, 2))
 
+
 def hadamardTransform(hadamard, data, N):
 	_G_tmp = np.dot(hadamard, data)
 	return np.dot(_G_tmp, hadamard) / 2**N
+
 
 def inverseHadamardTransform(hadamard, G, N):
 	_F_tmp = np.dot(hadamard, G)
@@ -86,7 +88,7 @@ def inverseHadamardTransform(hadamard, G, N):
 
 
 def main():
-	img_y, img_cr, img_cb = getYcbcrArray(imgname)
+	img_y, img_cr, img_cb = getYcbcrArray(imgName)
 	size = len(img_y)
 
 	# 2のべき乗かつ画像が正方形であるかどうかのチェック
@@ -103,7 +105,7 @@ def main():
 
 	Image.fromarray(np.uint8(F)).show()
 
-	saveYcbcrAsImg('wht_'+imgname, img_y, img_cr, img_cb)
+	saveYcbcrAsImg('wht_'+imgName, img_y, img_cr, img_cb)
 
 
 if __name__ == '__main__':
