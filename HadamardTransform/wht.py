@@ -3,8 +3,12 @@ import sys
 import numpy as np
 from PIL import Image
 
+outimgpath = '../images/result/'
+imgpath = '../images/'
+imgname = 'lena512.bmp'
 
-def generate_hadamard(N):
+
+def generateHadamard(N):
 	hadmard = np.asarray([[1.0,1.0],[1.0,-1.0]])
 	if (N != 1):
 		hadamard_copy = hadmard.copy()
@@ -34,8 +38,8 @@ def sequence(hadamardArray):
 	return hadamardArray[index]
 
 
-def get_ycbcr_array(name: str):
-	pil_img = Image.open('../images/'+name)
+def getYcbcrArray(name: str):
+	pil_img = Image.open(imgpath+name)
 	pil_y, pil_cr, pil_cb = pil_img.convert('YCbCr').split()
 	y = np.asarray(pil_y)
 	cr = np.asarray(pil_cr)
@@ -46,15 +50,15 @@ def get_ycbcr_array(name: str):
 	return [y, cr, cb]
 
 
-def save_ycbcr_as_img(name: str, y, cr, cb):
+def saveYcbcrAsImg(name: str, y, cr, cb):
 	pil_y = Image.fromarray(np.uint8(y))
 	pil_cr = Image.fromarray(np.uint8(cr))
 	pil_cb = Image.fromarray(np.uint8(cb))
 	pil_img = Image.merge('YCbCr', (pil_y, pil_cr, pil_cb)).convert('RGB')
-	pil_img.save('../images/result/' + name)
+	pil_img.save(outimgpath+name)
 
 
-def size_check(length: int, height: int):
+def sizeCheck(length: int, height: int):
 	# 2のべき乗かどうか判断して2のべき乗かつ画像の縦横が等しくなければ終了 等しければ2のN乗になってるかを返す
 	if length != height :
 		print('The image must be square.')
@@ -70,30 +74,40 @@ def size_check(length: int, height: int):
 
 	return int(math.log(height, 2))
 
+def hadamardTransform(hadamard, data, N):
+	_G_tmp = np.dot(hadamard, data)
+	return np.dot(_G_tmp, hadamard) / 2**N
+
+def inverseHadamardTransform(hadamard, G, N):
+	_F_tmp = np.dot(hadamard, G)
+	return np.dot(_F_tmp, hadamard) / 2**N
+
+
+
 
 def main():
-	imgname = 'lena512.bmp'
-	img = np.array(Image.open('../images/' + imgname), 'f')
-	img_y, img_cr, img_cb = get_ycbcr_array(imgname)
-	size = len(img)
+	img_y, img_cr, img_cb = getYcbcrArray(imgname)
+	size = len(img_y)
 
 	# 2のべき乗かつ画像が正方形であるかどうかのチェック
-	N = size_check(size, len(img[0]))
+	N = sizeCheck(size, len(img_y[0]))
 
-	hadamard = sequence(generate_hadamard(N))
+	# 並べ替え済みアダマール行列の生成
+	hadamard = sequence(generateHadamard(N))
 
 	# アダマール変換 G -> 変換係数
-	G_tmp = np.dot(hadamard, img_y)
-	G = np.dot(G_tmp, hadamard) / 2**N
+	G = hadamardTransform(hadamard, img_y, N)
 
-	# 復調
-	F_tmp = np.dot(hadamard, G)
-	F = np.dot(F_tmp, hadamard) / 2**N
-
+	# 復調 変換係数G -> F
+	F = inverseHadamardTransform(hadamard, G, N)
 
 	Image.fromarray(np.uint8(F)).show()
-	save_ycbcr_as_img(imgname, img_y, img_cr, img_cb)
+
+	saveYcbcrAsImg('wht_'+imgname, img_y, img_cr, img_cb)
 
 
 if __name__ == '__main__':
 	main()
+
+
+# 変換係数の右下の方に何かを埋め込む 左上にいくにつれて見つかりやすい
