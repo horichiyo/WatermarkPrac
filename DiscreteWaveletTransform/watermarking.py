@@ -5,18 +5,19 @@ import dwt
 import sys
 
 
-outImgPath = '../images/result/'
-imgPath    = '../images/'
-imgName    = 'lena512.bmp'
-# imgName    = 'dwt_resultlena512.bmp'
-wavelet    = 'db1'  # wavelist.txtにどれを指定できるか書いてある
-level      = 1
+outImgPath     = '../images/result/'
+imgPath        = '../images/'
+embedImgName   = 'lena256.bmp'
+extractImgName = 'embed_dwt_'+embedImgName
+wavelet        = 'db1'  # wavelist.txtにどれを指定できるか書いてある
+level          = 1
 
 
-def embedBitreplaceUsingDwt(secretData, imgName=imgName):
+def embedBitreplaceForDwt(secretData, imgName=embedImgName):
     width, height, img_y, img_cr, img_cb = dwt.getImgSizeAndData(imgName)
     coeffs = pywt.dwt2(img_y, wavelet=wavelet)
     cA, (cH, cV, cD) = coeffs
+
     # Watermarking area
     if (height/2) * (width/2) < len(secretData):
         print('Secret information is over the limit of embeded.')
@@ -33,11 +34,28 @@ def embedBitreplaceUsingDwt(secretData, imgName=imgName):
 
     coeffs_r = cA, (cH, cV, stego)
     img_y_f = pywt.waverec2(coeffs_r, wavelet=wavelet)
-    dwt.saveYcbcrAsImg('dwt_result'+imgName, img_y_f, img_cr, img_cb)
+
+    dwt.saveYcbcrAsImg('embed_dwt_'+imgName, img_y_f, img_cr, img_cb)
 
 
-def extractBitReplaceUsingDwt():
-    pass
+def extractBitReplaceForDwt(secretDataLength, stegoImgName=outImgPath+extractImgName, coverImgName=embedImgName):
+    width_stg, height_stg, img_y_stg, img_cr_stg, img_cb_stg = dwt.getImgSizeAndData(stegoImgName)
+    coeffs_stg = pywt.dwt2(img_y_stg, wavelet=wavelet)
+    cA_stg, (cH_stg, cV_stg, cD_stg) = coeffs_stg
+    stego = cD_stg.flatten()
+
+    width_cvr, height_cvr, img_y_cvr, img_cr_cvr, img_cb_cvr = dwt.getImgSizeAndData(stegoImgName)
+    coeffs_cvr = pywt.dwt2(img_y_cvr, wavelet=wavelet)
+    cA_cvr, (cH_cvr, cV_cvr, cD_cvr) = coeffs_cvr
+    cover = cD_cvr.flatten()
+
+    secretData = np.zeros(secretDataLength)
+
+    for i in range(secretDataLength):
+        secretData[i] = _extractAllDataForDwt(stego[i])
+
+    return secretData
+
 
 def _addBitToData(cover, secretBit):
     stego = int(round(cover))
@@ -59,8 +77,15 @@ def _addBitToData(cover, secretBit):
     stego = int(stego, 2)
     return stego
 
-def _extractAllDataForDwt():
-    pass
+def _extractAllDataForDwt(stego):
+    stego = int(round(stego))
+    stego = format(stego, '08b')
+    stego = stego[::-1]
+
+    if stego[0] == '0':
+        return 0
+    elif stego[0] == '1':
+        return 1
 
 def calcBer(resultData, rightData):
     if len(resultData) != len(rightData):
@@ -79,7 +104,8 @@ def calcBer(resultData, rightData):
 
 def main():
     secretData = np.array([0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1])
-    embedBitreplaceUsingDwt(secretData, imgName=imgName)
+    embedBitreplaceForDwt(secretData, imgName=embedImgName)
+    print(extractBitReplaceForDwt(secretData.size))
 
 
 if __name__ == '__main__':
