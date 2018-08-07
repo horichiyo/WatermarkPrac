@@ -7,7 +7,7 @@ import sys
 
 outImgPath     = '../images/result/'
 imgPath        = '../images/'
-embedImgName   = 'lena256.bmp'
+embedImgName   = 'balls.jpg'
 extractImgName = 'embed_dwt_'+embedImgName
 wavelet        = 'db1'  # wavelist.txtにどれを指定できるか書いてある
 level          = 1
@@ -32,7 +32,7 @@ def embedBitreplaceForDwt(secretData, imgName=embedImgName):
 
     stego = np.reshape(stego, (int(height/2), int(width/2)))
 
-    coeffs_r = cA, (cH, cV, stego)
+    coeffs_r = cA, (cH, cV, np.array(stego, dtype=np.int64))
     img_y_f = pywt.waverec2(coeffs_r, wavelet=wavelet)
 
     dwt.saveYcbcrAsImg('embed_dwt_'+imgName, img_y_f, img_cr, img_cb)
@@ -78,6 +78,7 @@ def _addBitToData(cover, secretBit):
     return stego
 
 def _extractAllDataForDwt(stego):
+    stego = float('{:.3f}'.format(stego))
     stego = int(round(stego))
     stego = format(stego, '08b')
     stego = stego[::-1]
@@ -96,16 +97,16 @@ def calcBer(resultData, rightData):
 
     print(resultData)
     print(rightData)
-    print(tmp)
 
     return np.count_nonzero(tmp)/len(rightData)
 
 
 
 def main():
-    secretData = np.array([0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1])
+    secretData = np.array([1,1,1,1,0,0,0,0])
     embedBitreplaceForDwt(secretData, imgName=embedImgName)
-    print(extractBitReplaceForDwt(secretData.size))
+    result = extractBitReplaceForDwt(secretData.size)
+    print(calcBer(secretData, result))
 
 
 if __name__ == '__main__':
