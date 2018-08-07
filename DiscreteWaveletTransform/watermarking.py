@@ -100,14 +100,32 @@ def calcBer(resultData, rightData):
 
     return np.count_nonzero(tmp)/len(rightData)
 
-
-
-def main():
-    secretData = np.array([1,1,1,1,0,0,0,0])
+def dwtBitreplaceWatermark():
+    secretData = np.array([1, 1, 1, 1, 0, 0, 0, 0])
     embedBitreplaceForDwt(secretData, imgName=embedImgName)
     result = extractBitReplaceForDwt(secretData.size)
     print(calcBer(secretData, result))
 
+def dataToBin(data):
+    bin = []
+    for i in data:
+        data_t = int(format(ord(i),'b'))
+        bin.append('{0:021d}'.format(data_t))
+    return  bin
+
+def binToData(bin):
+    data = []
+    for i in bin:
+        data.append(chr(int(i, 2)))
+    return data
+
+
+def main():
+    # print(ord('あ'), chr(12354))
+    tmp = ["あ","＄","!","0","]","|","/","堀"]
+    bin = dataToBin(tmp)
+    print(bin)
+    print(binToData(bin))
 
 if __name__ == '__main__':
     main()
