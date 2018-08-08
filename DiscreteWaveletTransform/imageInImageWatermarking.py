@@ -12,17 +12,19 @@ level      = 1
 
 def DWT(coverImageName, watermarkImageName):
     coverImage = np.array(Image.open(imgPath+coverImageName), 'f')
+    # coverImage = cv2.resize(coverImage, (512, 512))
     watermarkImage = np.array(Image.open(imgPath+watermarkImageName), 'f')
+    watermarkImage = cv2.resize(watermarkImage, (int(len(coverImage)/2), int(len(coverImage)/2)))
 
 
-    coverImage = cv2.resize(coverImage, (512, 512))
-    cv2.imshow('Cover Image', cv2.imread(imgPath+coverImageName))
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
-    watermarkImage = cv2.resize(watermarkImage, (256, 256))
-    cv2.imshow('Watermark Image', cv2.imread(imgPath+watermarkImageName))
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+
+    # cv2.imshow('Cover Image', cv2.imread(imgPath+coverImageName))
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
+    #
+    # cv2.imshow('Watermark Image', cv2.imread(imgPath+watermarkImageName))
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
 
     # DWT on cover image
     coverImage = np.float64(coverImage)
@@ -35,7 +37,8 @@ def DWT(coverImageName, watermarkImageName):
     watermarkImage /= 255
 
     # Embedding
-    coeffW = (0.4 * cA + 0.1 * watermarkImage, (cH, cV, cD))
+    coeffW = cA, (cH, cV, 1.0*cD + 0.1*watermarkImage)
+
     watermarkedImage = pywt.idwt2(coeffW, 'haar')
     cv2.imshow('Watermarked Image', watermarkedImage)
     cv2.waitKey(0)
@@ -45,9 +48,10 @@ def DWT(coverImageName, watermarkImageName):
     coeffWM = pywt.dwt2(watermarkedImage, 'haar')
     hA, (hH, hV, hD) = coeffWM
 
-    extracted = (hA - 0.4 * cA) / 0.1
+    extracted = (hD - 1.0 * cD) / 0.1
     extracted *= 255;
     extracted = np.uint8(extracted)
+
     cv2.imshow('Extracted', extracted)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
