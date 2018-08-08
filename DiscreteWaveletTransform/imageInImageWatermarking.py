@@ -16,11 +16,11 @@ def DWT(coverImageName, watermarkImageName):
 
 
     coverImage = cv2.resize(coverImage, (512, 512))
-    cv2.imshow('Cover Image', coverImage)
+    cv2.imshow('Cover Image', cv2.imread(imgPath+coverImageName))
     cv2.waitKey(0)
     cv2.destroyAllWindows()
     watermarkImage = cv2.resize(watermarkImage, (256, 256))
-    cv2.imshow('Watermark Image', watermarkImage)
+    cv2.imshow('Watermark Image', cv2.imread(imgPath+watermarkImageName))
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
