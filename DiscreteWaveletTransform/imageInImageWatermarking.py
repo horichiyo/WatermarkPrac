@@ -142,18 +142,31 @@ def FFT(coverImageName, watermarkImageName):
     _show(coverImage, title='Cover Image')
     _show(watermarkImage, title='watermarkImage')
 
-    watermarkedImage = calcFFT(coverImage, watermarkImage, 5)
+    watermarkedImage = _calcFFT(coverImage, watermarkImage, 0.1)
 
     _show(watermarkedImage, 'Watermarked Image')
 
+    tmp = _calcIFFT(coverImage, watermarkedImage, 0.1)
 
-def calcFFT(imageMat, watermarkMat, strength):
-    shiftedDFT = np.fft.fftshift(np.fft.fft2(imageMat))
-    watermarkedFFT = shiftedDFT + strength*watermarkMat
-    watermarkedImage = np.fft.ifft2(np.fft.ifftshift(watermarkedFFT)).real
+    _show(tmp)
+
+
+def _calcFFT(coverMat, watermarkMat, strength):
+    shiftedFFT = np.fft.fftshift(np.fft.fft2(coverMat))
+    watermarkedFFT = shiftedFFT + strength*watermarkMat
+    watermarkedImage = np.fft.ifft2(np.fft.ifftshift(watermarkedFFT))
 
     return watermarkedImage
 
+
+
+def _calcIFFT(coverMat, watermarkedMat, strength):
+    shiftedFFT_watermarked = np.fft.fftshift(np.fft.fft2(watermarkedMat))
+    shiftedFFT_cover = np.fft.fftshift(np.fft.fft2(coverMat))
+    extractMat = (shiftedFFT_watermarked - shiftedFFT_cover) / strength
+    extractImage = extractMat
+
+    return extractImage
 
 
 
