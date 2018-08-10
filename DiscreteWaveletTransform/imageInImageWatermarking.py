@@ -142,13 +142,15 @@ def FFT(coverImageName, watermarkImageName):
     _show(coverImage, title='Cover Image')
     _show(watermarkImage, title='watermarkImage')
 
+    # embed
     watermarkedImage = _calcFFT(coverImage, watermarkImage, 0.1)
 
     _show(watermarkedImage, 'Watermarked Image')
 
-    tmp = _calcIFFT(coverImage, watermarkedImage, 0.1)
+    # extract
+    extractImage = _calcIFFT(coverImage, watermarkedImage, 0.1)
 
-    _show(tmp)
+    _show(extractImage, 'Extract Image')
 
 
 def _calcFFT(coverMat, watermarkMat, strength):
@@ -158,8 +160,6 @@ def _calcFFT(coverMat, watermarkMat, strength):
 
     return watermarkedImage
 
-
-
 def _calcIFFT(coverMat, watermarkedMat, strength):
     shiftedFFT_watermarked = np.fft.fftshift(np.fft.fft2(watermarkedMat))
     shiftedFFT_cover = np.fft.fftshift(np.fft.fft2(coverMat))
@@ -168,8 +168,6 @@ def _calcIFFT(coverMat, watermarkedMat, strength):
 
     return extractImage
 
-
-
 def _saveGrayImg(imgName):
     img = np.array(Image.open(imgPath+imgName), 'f')
     gray_img = Image.fromarray(np.uint8(img)).convert('L')
@@ -177,16 +175,17 @@ def _saveGrayImg(imgName):
 
 def _show(img,title='title'):
     img_s = np.uint8(img)
-    cv2.imshow(title, img_s)
+    img_resize = imS = cv2.resize(img_s, (512, 512))
+    cv2.WINDOW_NORMAL
+    cv2.imshow(title, img_resize)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
 
 def main():
-    FFT('lena512.bmp', 'lake.bmp')
+    FFT('lena512.jpg', 'lake.bmp')
 
 if __name__ == '__main__':
-    # https://goo.gl/forms/D0ioYIAt0gpwYyGO2
     main()
 
 
