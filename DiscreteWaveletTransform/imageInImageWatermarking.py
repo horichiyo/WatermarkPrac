@@ -19,18 +19,20 @@ def DWT_gray(coverImageName, watermarkImageName):
     # _show(cv2.imread(imgPath+watermarkImageName), title='Watermark Image')
 
     # DWT on cover image
-    coverImage = np.float64(coverImage)
+    coverImage_ycc = cv2.cvtColor(coverImage, cv2.COLOR_BGR2YCR_CB)
+    coverImage_y = coverImage_ycc[:,:,0]
+    coverImage_y = np.float64(coverImage_y)
     coverImage /= 255
-    coeffC = pywt.dwt2(coverImage, wavelet)
+    coeffC = pywt.dwt2(coverImage_y, wavelet)
     cA, (cH, cV, cD) = coeffC
 
-    # TODO:上のを使って読み込むやつ作成
-    _, _, watermarkImage, _, _ = dwt.getImgSizeAndData(watermarkImageName)
-    watermarkImage = watermarkImage.astype(np.float64)
-    watermarkImage /= 255
+    watermarkImage_ycc = cv2.cvtColor(watermarkImage, cv2.COLOR_BGR2YCR_CB)
+    watermarkImage_y = watermarkImage_ycc[:,:,0]
+    watermarkImage_y = watermarkImage_y.astype(np.float64)
+    watermarkImage_y /= 255
 
     # Embedding
-    coeffW = cA, (cH, cV, 0.4*cD+0.1*watermarkImage)
+    coeffW = cA, (cH, cV, 0.4*cD+0.1*watermarkImage_y)
 
     watermarkedImage = pywt.idwt2(coeffW, wavelet)
     _show(watermarkedImage, title='Watermarked Image')
@@ -111,7 +113,7 @@ def _show(img,title='title'):
 
 
 def main():
-    DWT_gray('graylena512.bmp', 'lake.bmp')
+    DWT_gray('lena512.bmp', 'lake.bmp')
 
 if __name__ == '__main__':
     # https://goo.gl/forms/D0ioYIAt0gpwYyGO2
