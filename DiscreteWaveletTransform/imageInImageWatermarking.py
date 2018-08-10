@@ -134,6 +134,29 @@ def DWT_color(coverImageName, watermarkImageName):
     # # dwt.saveYcbcrAsImg('lake_out.bmp', y, r, b)
 
 
+def FFT(coverImageName, watermarkImageName):
+    coverImage = cv2.imread(imgPath + coverImageName)
+    watermarkImage = cv2.imread(imgPath + watermarkImageName)
+    watermarkImage = cv2.resize(watermarkImage, (int(len(coverImage)), int(len(coverImage))))
+
+    # _show(coverImage, title='Cover Image')
+    # _show(watermarkImage, title=watermarkImage)
+
+    watermarkedImage = calcFFT(coverImage, watermarkImage, 5)
+
+    _show(watermarkedImage, 'Watermarked Image')
+
+
+def calcFFT(imageMat, watermarkMat, strength):
+    shiftedDFT = np.fft.fftshift(np.fft.fft2(imageMat))
+    watermarkedFFT = shiftedDFT + strength*watermarkMat
+    watermarkedImage = np.fft.ifft2(np.fft.ifftshift(watermarkedFFT))
+
+    return watermarkedImage
+
+
+
+
 def _saveGrayImg(imgName):
     img = np.array(Image.open(imgPath+imgName), 'f')
     gray_img = Image.fromarray(np.uint8(img)).convert('L')
@@ -147,7 +170,7 @@ def _show(img,title='title'):
 
 
 def main():
-    DWT_gray('lena512.bmp', 'lake.bmp')
+    FFT('lena512.bmp', 'lake.bmp')
 
 if __name__ == '__main__':
     # https://goo.gl/forms/D0ioYIAt0gpwYyGO2
