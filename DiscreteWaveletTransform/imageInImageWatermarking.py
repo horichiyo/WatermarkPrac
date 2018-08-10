@@ -11,8 +11,8 @@ level      = 1
 
 
 def DWT_gray(coverImageName, watermarkImageName):
-    coverImage = np.array(Image.open(imgPath+coverImageName), 'f')
-    watermarkImage = np.array(Image.open(imgPath+watermarkImageName), 'f')
+    coverImage = cv2.imread(imgPath+coverImageName)
+    watermarkImage = cv2.imread(imgPath+watermarkImageName)
     watermarkImage = cv2.resize(watermarkImage, (int(len(coverImage)/2), int(len(coverImage)/2)))
 
     # _show(cv2.imread(imgPath+coverImageName), title='Cover Image')
@@ -22,14 +22,12 @@ def DWT_gray(coverImageName, watermarkImageName):
     coverImage_ycc = cv2.cvtColor(coverImage, cv2.COLOR_BGR2YCR_CB)
     coverImage_y = coverImage_ycc[:,:,0]
     coverImage_y = np.float64(coverImage_y)
-    coverImage /= 255
     coeffC = pywt.dwt2(coverImage_y, wavelet)
     cA, (cH, cV, cD) = coeffC
 
     watermarkImage_ycc = cv2.cvtColor(watermarkImage, cv2.COLOR_BGR2YCR_CB)
     watermarkImage_y = watermarkImage_ycc[:,:,0]
     watermarkImage_y = watermarkImage_y.astype(np.float64)
-    watermarkImage_y /= 255
 
     # Embedding
     coeffW = cA, (cH, cV, 0.4*cD+0.1*watermarkImage_y)
@@ -42,63 +40,98 @@ def DWT_gray(coverImageName, watermarkImageName):
     hA, (hH, hV, hD) = coeffWM
 
     extracted = (hD - 0.4*cD) / 0.1
-    extracted *= 255
     extracted = np.uint8(extracted)
 
-    _show(extracted, title='Extracted')
+    _show(extracted, title='Extracted Image')
 
 
 def DWT_color(coverImageName, watermarkImageName):
-    coverImage = np.array(Image.open(imgPath+coverImageName), 'f')
-    watermarkImage = np.array(Image.open(imgPath+watermarkImageName), 'f')
-    watermarkImage = cv2.resize(watermarkImage, (int(len(coverImage)/2), int(len(coverImage)/2)))
-
-    # _show(cv2.imread(imgPath+coverImageName), title='Cover Image')
-    # _show(cv2.imread(imgPath+watermarkImageName), title='Watermark Image')
-
-    # DWT on cover image
-    coverImage = np.float64(coverImage)
-    coverImage /= 255
-    coeffC = pywt.dwt2(coverImage, wavelet)
-    cA, (cH, cV, cD) = coeffC
-
-    # TODO:上のを使って読み込むやつ作成
-    _, _, watermarkImage, cr, cb = dwt.getImgSizeAndData(watermarkImageName)
-    watermarkImage = watermarkImage.astype(np.float64)
-    watermarkImage /= 255
-
-    cr = cr.astype(np.float64)
-    cr /= 255
-    cb = cb.astype(np.float64)
-    cb /= 255
-
-    # Embedding
-    # coeffW = cA, (cH, cV, 0.4*cD+0.1*watermarkImage)
-    coeffW = cA, (cH*0.4+0.1*cr, cV*0.4+0.1*cb, 0.4*cD+0.1*watermarkImage)
-
-    watermarkedImage = pywt.idwt2(coeffW, wavelet)
-    _show(watermarkedImage, title='Watermarked Image')
-
-    # Extraction
-    coeffWM = pywt.dwt2(watermarkedImage, wavelet)
-    hA, (hH, hV, hD) = coeffWM
-
-    # extracted = (hD - 0.4*cD) / 0.1
-    # extracted *= 255
-    # extracted = np.uint8(extracted)
+    pass
+    # coverImage = cv2.imread(imgPath+coverImageName)
+    # watermarkImage = cv2.imread(imgPath+watermarkImageName)
+    # watermarkImage = cv2.resize(watermarkImage, (int(len(coverImage)/2), int(len(coverImage)/2)))
     #
-    # _show(extracted, title='Extracted')
-
-    y = (hD - 0.4*cD) / 0.1
-    y *= 255
-    y = np.uint8(y)
-    b = (hV - 0.4*cV) / 0.1
-    b*=255
-    b = np.uint8(b)
-    r = (hH - 0.4*cV) / 0.1
-    r*=255
-    r = np.uint8(r)
-    dwt.saveYcbcrAsImg('lake_out.bmp', y, r, b)
+    # # _show(cv2.imread(imgPath+coverImageName), title='Cover Image')
+    # # _show(cv2.imread(imgPath+watermarkImageName), title='Watermark Image')
+    #
+    # # DWT on cover image
+    # coverImage_ycc = cv2.cvtColor(coverImage, cv2.COLOR_BGR2YCR_CB)
+    #
+    # coverImage_y = coverImage_ycc[:, :, 0]
+    # coverImage_y = np.float64(coverImage_y)
+    # # coverImage_y /= 255
+    # coeffC_y = pywt.dwt2(coverImage_y, wavelet)
+    # cA_y, (cH_y, cV_y, cD_y) = coeffC_y
+    #
+    # coverImage_cr = coverImage_ycc[:, :, 1]
+    # coverImage_cr = np.float64(coverImage_cr)
+    # # coverImage_cr /= 255
+    # coeffC_cr = pywt.dwt2(coverImage_cr, wavelet)
+    # cA_cr, (cH_cr, cV_cr, cD_cr) = coeffC_cr
+    #
+    # coverImage_cb = coverImage_ycc[:, :, 2]
+    # coverImage_cb = np.float64(coverImage_cb)
+    # # coverImage_cb /= 255
+    # coeffC_cb = pywt.dwt2(coverImage_cb, wavelet)
+    # cA_cb, (cH_cb, cV_cb, cD_cb) = coeffC_cb
+    #
+    #
+    # watermarkImage_ycc = cv2.cvtColor(watermarkImage, cv2.COLOR_BGR2YCR_CB)
+    #
+    # watermarkImage_y = watermarkImage_ycc[:, :, 0]
+    # watermarkImage_y = watermarkImage_y.astype(np.float64)
+    # # watermarkImage_y /= 255
+    #
+    # watermarkImage_cr = watermarkImage_ycc[:, :, 1]
+    # watermarkImage_cr = watermarkImage_cr.astype(np.float64)
+    # # watermarkImage_cr /= 255
+    #
+    # watermarkImage_ycc = cv2.cvtColor(watermarkImage, cv2.COLOR_BGR2YCR_CB)
+    # watermarkImage_cb = watermarkImage_ycc[:, :, 2]
+    # watermarkImage_cb = watermarkImage_cb.astype(np.float64)
+    # # watermarkImage_cb /= 255
+    #
+    #
+    # # Embedding
+    #
+    # coeffW_y = cA_y, (cH_y, cV_y, 0.4*cD_y+0.1*watermarkImage_y)
+    # coeffW_cr = cA_cr, (cH_cb, cV_cr, 0.4*cD_cr+0.1*watermarkImage_cr)
+    # coeffW_cb = cA_cb, (cH_cb, cV_cb, 0.4 * cD_cb + 0.1 * watermarkImage_cb)
+    #
+    # watermarkedImage_y = pywt.idwt2(coeffW_y, wavelet)
+    # watermarkedImage_cr = pywt.idwt2(coeffW_cr, wavelet)
+    # watermarkedImage_cb = pywt.idwt2(coeffW_cb, wavelet)
+    #
+    # watermarkedImage_ycc = np.dstack([watermarkedImage_y, watermarkedImage_cr, watermarkedImage_cb])
+    # print(coverImage)
+    # watermarkedImage_ycc = np.uint8(watermarkedImage_ycc)
+    # print('------')
+    # watermarkedImage_bgr = cv2.cvtColor(watermarkedImage_ycc, cv2.COLOR_BGR2YCR_CB)
+    # print(watermarkedImage_bgr)
+    #
+    # # _show(watermarkedImage_bgr, title='Watermarked Image')
+    # return
+    #
+    # # Extraction
+    # # coeffWM = pywt.dwt2(watermarkedImage, wavelet)
+    # # hA, (hH, hV, hD) = coeffWM
+    #
+    # # extracted = (hD - 0.4*cD) / 0.1
+    # # extracted *= 255
+    # # extracted = np.uint8(extracted)
+    # #
+    # # _show(extracted, title='Extracted')
+    #
+    # # y = (hD - 0.4*cD) / 0.1
+    # # y *= 255
+    # # y = np.uint8(y)
+    # # b = (hV - 0.4*cV) / 0.1
+    # # b*=255
+    # # b = np.uint8(b)
+    # # r = (hH - 0.4*cV) / 0.1
+    # # r*=255
+    # # r = np.uint8(r)
+    # # dwt.saveYcbcrAsImg('lake_out.bmp', y, r, b)
 
 
 def _saveGrayImg(imgName):
