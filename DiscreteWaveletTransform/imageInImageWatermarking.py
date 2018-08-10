@@ -107,7 +107,8 @@ def _saveGrayImg(imgName):
     gray_img.save(outImgPath+'gray'+imgName)
 
 def _show(img,title='title'):
-    cv2.imshow(title, img)
+    img_s = np.uint8(img)
+    cv2.imshow(title, img_s)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
