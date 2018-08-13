@@ -9,6 +9,7 @@ imgName    = 'lena512.bmp'
 watermarkingImgName = 'lake.bmp'
 
 a=100
+div=2
 
 
 def generateHadamard(N):
@@ -94,13 +95,14 @@ def embed(coverImgName=imgName, watermarkingImgName=watermarkingImgName):
 
 	# 埋め込む画像の読み込み（カバー画像の1/4になるようにリサイズ（あとで調整））
 	pil_img = Image.open(imgPath+watermarkingImgName)
-	pil_img = pil_img.resize((int(width/4), int(height/4)), Image.LANCZOS)
+	pil_img = pil_img.resize((int(width/div), int(height/div)), Image.LANCZOS)
 	pil_y, _, _ = pil_img.convert('YCbCr').split()
 	y = np.asarray(pil_y)
 	y.flags.writeable = True
 
 	# 並べ替え済みアダマール行列の生成
 	hadamard = sequence(generateHadamard(N))
+	_show(hadamard)
 
 	# アダマール変換 G -> 変換係数
 	G = hadamardTransform(hadamard, img_y, N)
@@ -108,7 +110,7 @@ def embed(coverImgName=imgName, watermarkingImgName=watermarkingImgName):
 	# 画像の埋め込み
 	G[len(img_y)-len(y):, len(img_y)-len(y):] = y / a
 
-	F = inverseHadamardTransform(hadamard, G, N)
+	F = hadamardTransform(hadamard, G, N)
 
 	# 埋め込み後の変換係数
 	_show(G)
@@ -124,7 +126,7 @@ def extract(G):
 	hadamard = sequence(generateHadamard(N))
 	F = hadamardTransform(hadamard, G, N)
 	ex_g = hadamardTransform(hadamard, F, N)
-	ex = ex_g[int(len(G)-len(G)/4):, int(len(G)-len(G)/4):] * a
+	ex = ex_g[int(len(G)-len(G)/div):, int(len(G)-len(G)/div):] * a
 
 	_show(ex)
 
