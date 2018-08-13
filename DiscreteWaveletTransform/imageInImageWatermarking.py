@@ -163,7 +163,8 @@ def _calcFFT(coverMat, watermarkMat, strength):
 def _calcIFFT(coverMat, watermarkedMat, strength):
     shiftedFFT_watermarked = np.fft.fftshift(np.fft.fft2(watermarkedMat))
     shiftedFFT_cover = np.fft.fftshift(np.fft.fft2(coverMat))
-    extractMat = (shiftedFFT_watermarked - shiftedFFT_cover) / strength
+    extractMat = np.abs(shiftedFFT_watermarked - shiftedFFT_cover) / strength
+    # extractMat = np.abs(shiftedFFT_cover-shiftedFFT_watermarked) / strength
     extractImage = extractMat
 
     return extractImage
@@ -174,6 +175,7 @@ def _saveGrayImg(imgName):
     gray_img.save(outImgPath+'gray'+imgName)
 
 def _show(img,title='title'):
+
     img_s = np.uint8(img)
     img_resize = imS = cv2.resize(img_s, (512, 512))
     cv2.WINDOW_NORMAL
@@ -183,7 +185,7 @@ def _show(img,title='title'):
 
 
 def main():
-    FFT('lena512.jpg', 'lake.bmp')
+    FFT('lena256.bmp', 'lake.bmp')
 
 if __name__ == '__main__':
     main()
