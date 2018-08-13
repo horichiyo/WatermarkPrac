@@ -91,6 +91,9 @@ def main():
 	img_y, img_cr, img_cb = getYcbcrArray(imgName)
 	size = len(img_y)
 
+	y, _,_ = getYcbcrArray('lake.bmp')
+
+
 	# 2のべき乗かつ画像が正方形であるかどうかのチェック
 	N = sizeCheck(size, len(img_y[0]))
 
@@ -99,17 +102,25 @@ def main():
 
 	# アダマール変換 G -> 変換係数
 	G = hadamardTransform(hadamard, img_y, N)
+	for i in range(len(y)):
+		for j in range(len(y)):
+			G[len(y)+i,len(y)+j] = y[i,j]
+
+
 
 	# 復調 変換係数G -> F
 	F = inverseHadamardTransform(hadamard, G, N)
 
 	Image.fromarray(np.uint8(F)).show()
 
-	saveYcbcrAsImg('wht_'+imgName, img_y, img_cr, img_cb)
+	ex_g = hadamardTransform(hadamard, F, N)
+	ex = ex_g[256:, 256:]
+	Image.fromarray(np.uint8(ex)).show()
+
+	# saveYcbcrAsImg('wht_'+imgName, img_y, img_cr, img_cb)
 
 
 if __name__ == '__main__':
 	main()
 
 
-# 変換係数の右下の方に何かを埋め込む 左上にいくにつれて見つかりやすい
