@@ -85,10 +85,6 @@ def hadamardTransform(hadamard, data, N):
 	return np.dot(_G_tmp, hadamard) / 2**N
 
 
-def inverseHadamardTransform(hadamard, G, N):
-	_F_tmp = np.dot(hadamard, G)
-	return np.dot(_F_tmp, hadamard) / 2**N
-
 def embed(coverImgName=imgName, watermarkingImgName=watermarkingImgName):
 	# カバー画像の読み込み（輝度値）
 	width, height, img_y, _, _ = getYcbcrArray(coverImgName)
