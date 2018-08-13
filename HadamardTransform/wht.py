@@ -6,6 +6,9 @@ from PIL import Image
 outImgPath = '../images/result/'
 imgPath    = '../images/'
 imgName    = 'lena512.bmp'
+watermarkingImgName = 'lake.bmp'
+
+a=100
 
 
 def generateHadamard(N):
@@ -47,7 +50,9 @@ def getYcbcrArray(name):
 	y.flags.writeable = True
 	cr.flags.writeable = True
 	cb.flags.writeable = True
-	return [y, cr, cb]
+	width = pil_img.width
+	height = pil_img.height
+	return width, height, y, cr, cb
 
 
 def saveYcbcrAsImg(name: str, y, cr, cb):
@@ -84,40 +89,59 @@ def inverseHadamardTransform(hadamard, G, N):
 	_F_tmp = np.dot(hadamard, G)
 	return np.dot(_F_tmp, hadamard) / 2**N
 
-
-
-
-def main():
-	img_y, img_cr, img_cb = getYcbcrArray(imgName)
-	size = len(img_y)
-
-	y, _,_ = getYcbcrArray('lake.bmp')
-
+def embed(coverImgName=imgName, watermarkingImgName=watermarkingImgName):
+	# カバー画像の読み込み（輝度値）
+	width, height, img_y, _, _ = getYcbcrArray(coverImgName)
 
 	# 2のべき乗かつ画像が正方形であるかどうかのチェック
-	N = sizeCheck(size, len(img_y[0]))
+	N = sizeCheck(width, height)
+
+	# 埋め込む画像の読み込み（カバー画像の1/4になるようにリサイズ（あとで調整））
+	pil_img = Image.open(imgPath+watermarkingImgName)
+	pil_img = pil_img.resize((int(width/4), int(height/4)), Image.LANCZOS)
+	pil_y, _, _ = pil_img.convert('YCbCr').split()
+	y = np.asarray(pil_y)
+	y.flags.writeable = True
 
 	# 並べ替え済みアダマール行列の生成
 	hadamard = sequence(generateHadamard(N))
 
 	# アダマール変換 G -> 変換係数
 	G = hadamardTransform(hadamard, img_y, N)
-	for i in range(len(y)):
-		for j in range(len(y)):
-			G[len(y)+i,len(y)+j] = y[i,j]
 
+	# 画像の埋め込み
+	G[len(img_y)-len(y):, len(img_y)-len(y):] = y / a
 
-
-	# 復調 変換係数G -> F
 	F = inverseHadamardTransform(hadamard, G, N)
 
-	Image.fromarray(np.uint8(F)).show()
+	# 埋め込み後の変換係数
+	_show(G)
+	# 埋め込み後の画像
+	_show(F)
 
+	return G
+
+
+def extract(G):
+	# 変換係数の大きさチェック（返り値が2のべき乗なので使っている）
+	N = sizeCheck(len(G), len(G[0]))
+	hadamard = sequence(generateHadamard(N))
+	F = hadamardTransform(hadamard, G, N)
 	ex_g = hadamardTransform(hadamard, F, N)
-	ex = ex_g[256:, 256:]
-	Image.fromarray(np.uint8(ex)).show()
+	ex = ex_g[int(len(G)-len(G)/4):, int(len(G)-len(G)/4):] * a
 
-	# saveYcbcrAsImg('wht_'+imgName, img_y, img_cr, img_cb)
+	_show(ex)
+
+
+def _show(array):
+	Image.fromarray(np.uint8(array)).show()
+
+
+
+
+def main():
+	extract(embed(coverImgName=imgName, watermarkingImgName=watermarkingImgName))
+
 
 
 if __name__ == '__main__':
