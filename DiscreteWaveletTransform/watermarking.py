@@ -44,7 +44,7 @@ def extractBitReplaceForDwt(secretDataLength, stegoImgName=outImgPath+extractImg
     cA_stg, (cH_stg, cV_stg, cD_stg) = coeffs_stg
     stego = cD_stg.flatten()
 
-    width_cvr, height_cvr, img_y_cvr, img_cr_cvr, img_cb_cvr = dwt.getImgSizeAndData(stegoImgName)
+    width_cvr, height_cvr, img_y_cvr, img_cr_cvr, img_cb_cvr = dwt.getImgSizeAndData(coverImgName)
     coeffs_cvr = pywt.dwt2(img_y_cvr, wavelet=wavelet)
     cA_cvr, (cH_cvr, cV_cvr, cD_cvr) = coeffs_cvr
     cover = cD_cvr.flatten()
@@ -125,7 +125,7 @@ def binCombine(bin):
     return bin_tmp
 
 
-def main():
+def dataChangeTest():
     # print(ord('あ'), chr(12354))
     tmp = ["あ","＄","!","0","]","|","/","堀"]
     bin = dataToBin(tmp)
@@ -142,4 +142,4 @@ def dwtBitreplaceWatermark():
     print(calcBer(secretData, result))
 
 if __name__ == '__main__':
-    main()
+    dwtBitreplaceWatermark()
