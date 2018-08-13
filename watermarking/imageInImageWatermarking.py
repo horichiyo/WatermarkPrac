@@ -1,4 +1,6 @@
-import dwt
+import sys
+sys.path.append('..')
+from DiscreteWaveletTransform import dwt
 import pywt
 import cv2
 import numpy as np
