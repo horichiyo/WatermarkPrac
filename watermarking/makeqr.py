@@ -1,4 +1,5 @@
 import qrcode
+import zbarlight
 import numpy as np
 from PIL import Image
 
@@ -27,12 +28,19 @@ def generate_qrcode(data, version=1, error_correction=qrcode.constants.ERROR_COR
     array = bool_to_int(np.array(img))
     return array
 
+def decode_qrcode(data):
+    qrImg = Image.fromarray(np.uint8(data))
+    codes = zbarlight.scan_codes('qrcode', qrImg)
+    for i in codes:
+        codes = i.decode('utf-8', 'ignore')
+
+    return codes
 
 
 def main():
-    tmp = generate_qrcode('Melbourne')
+    tmp = generate_qrcode('あ，4％＄＠?>/kfgejabjdfk確かに')
     # decode部分を追加
-
+    print(decode_qrcode(tmp))
 
 
 
