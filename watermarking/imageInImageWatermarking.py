@@ -179,7 +179,7 @@ def _saveGrayImg(imgName):
 def _show(img,title='title'):
 
     img_s = np.uint8(img)
-    img_resize = imS = cv2.resize(img_s, (512, 512))
+    img_resize = cv2.resize(img_s, (512, 512))
     cv2.WINDOW_NORMAL
     cv2.imshow(title, img_resize)
     cv2.waitKey(0)
