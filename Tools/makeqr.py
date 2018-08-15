@@ -38,15 +38,8 @@ def decode_qrcode(data):
     return codes
 
 def qrsizeChange(array):
-    m_f = np.log2(len(array))
-    m_i = np.ceil(m_f)
-    next_pow2 =  int(np.log2(2 ** m_i))
-    img = Image.fromarray(np.uint8(array))
-    img = img.resize((int(math.pow(2, next_pow2)), int(math.pow(2, next_pow2))))
-    img = np.asarray(img)
-    img.flags.writeable = True
-    return img
-
+    next_pow2 =  int(np.log2(2 ** np.ceil(np.log2(len(array)))))
+    return np.asarray(Image.fromarray(np.uint8(array)).resize((int(2**next_pow2), int(2**next_pow2))))
 
 def main():
     # encode
