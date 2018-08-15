@@ -1,6 +1,7 @@
 import sys
 sys.path.append('..')
 from DiscreteWaveletTransform import dwt
+from Tools import makeqr
 import pywt
 import cv2
 import numpy as np
@@ -136,7 +137,7 @@ def DWT_color(coverImageName, watermarkImageName):
     # # dwt.saveYcbcrAsImg('lake_out.bmp', y, r, b)
 
 
-def FFT(coverImageName, watermarkImageName):
+def FFT(coverImageName, watermarkImageName, save=False):
     coverImage = cv2.imread(imgPath + coverImageName)
     watermarkImage = cv2.imread(imgPath + watermarkImageName)
     watermarkImage = cv2.resize(watermarkImage, (int(len(coverImage)), int(len(coverImage))))
@@ -153,6 +154,11 @@ def FFT(coverImageName, watermarkImageName):
     extractImage = _calcIFFT(coverImage, watermarkedImage, 0.1)
 
     _show(extractImage, 'Extract Image')
+
+    if (save==True):
+        Image.fromarray(np.uint8(extractImage)).save(outImgPath + 'extract_fft.bmp')
+
+
 
 
 def _calcFFT(coverMat, watermarkMat, strength):
@@ -185,9 +191,21 @@ def _show(img,title='title'):
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
+def _embedQrcode(message):
+    qr = makeqr.generateQrcode(message)
+    qr = makeqr.qrsizeChange(qr)
+    Image.fromarray(qr).save(imgPath + 'QR.bmp')
+    FFT('lena256.bmp', 'QR.bmp', save=True)
+
+
+def _decodeQrcode():
+    qr = cv2.imread(outImgPath + 'extract_fft.bmp')
+    return makeqr.decodeQrcode(np.uint8(qr))
+
 
 def main():
-    FFT('lena256.bmp', 'lake.bmp')
+    _embedQrcode('私はメルボルン大学でInternshipをしています！！。')
+    print(_decodeQrcode())
 
 if __name__ == '__main__':
     main()
