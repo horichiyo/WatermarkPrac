@@ -5,12 +5,7 @@ from PIL import Image
 
 
 def boolToInt(array):
-    array_r = np.where(array == True, 100, 0)
-    return  array_r
-
-def intToBool(array):
-    array_r = np.where(array > 50, True, False)
-    return array_r
+    return np.where(array == True, 255, 0)
 
 def generateQrcode(data, version=1, error_correction=qrcode.constants.ERROR_CORRECT_H, box_size=5, border=4):
     qr = qrcode.QRCode(
@@ -25,8 +20,7 @@ def generateQrcode(data, version=1, error_correction=qrcode.constants.ERROR_CORR
 
     print('Pixel size is '+str(img.pixel_size)+'.')
 
-    array = boolToInt(np.array(img))
-    return array
+    return boolToInt(np.array(img))
 
 def decodeQrcode(data):
     qrImg = Image.fromarray(np.uint8(data))
