@@ -1,19 +1,18 @@
 import qrcode
-import math
 import zbarlight
 import numpy as np
 from PIL import Image
 
 
-def bool_to_int(array):
+def boolToInt(array):
     array_r = np.where(array == True, 100, 0)
     return  array_r
 
-def int_to_bool(array):
+def intToBool(array):
     array_r = np.where(array > 50, True, False)
     return array_r
 
-def generate_qrcode(data, version=1, error_correction=qrcode.constants.ERROR_CORRECT_H, box_size=5, border=4):
+def generateQrcode(data, version=1, error_correction=qrcode.constants.ERROR_CORRECT_H, box_size=5, border=4):
     qr = qrcode.QRCode(
         version=version,
         error_correction=error_correction,
@@ -26,10 +25,10 @@ def generate_qrcode(data, version=1, error_correction=qrcode.constants.ERROR_COR
 
     print('Pixel size is '+str(img.pixel_size)+'.')
 
-    array = bool_to_int(np.array(img))
+    array = boolToInt(np.array(img))
     return array
 
-def decode_qrcode(data):
+def decodeQrcode(data):
     qrImg = Image.fromarray(np.uint8(data))
     codes = zbarlight.scan_codes('qrcode', qrImg)
     for i in codes:
@@ -43,10 +42,10 @@ def qrsizeChange(array):
 
 def main():
     # encode
-    tmp = generate_qrcode('私はオーストラリアでInternshipをしています！')
+    tmp = generateQrcode('私はオーストラリアでInternshipをしています！')
     # decode
     tmp_a = qrsizeChange(tmp)
-    print(decode_qrcode(tmp_a))
+    print(decodeQrcode(tmp_a))
 
 
 
