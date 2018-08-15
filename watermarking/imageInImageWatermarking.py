@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import sys
 sys.path.append('..')
 from DiscreteWaveletTransform import dwt
@@ -159,8 +160,6 @@ def FFT(coverImageName, watermarkImageName, save=False):
         Image.fromarray(np.uint8(extractImage)).save(outImgPath + 'extract_fft.bmp')
 
 
-
-
 def _calcFFT(coverMat, watermarkMat, strength):
     shiftedFFT = np.fft.fftshift(np.fft.fft2(coverMat))
     watermarkedFFT = shiftedFFT + strength*watermarkMat
@@ -184,7 +183,7 @@ def _saveGrayImg(imgName):
 
 def _show(img,title='title'):
 
-    img_s = np.uint8(img)
+    img_s = np.uint8(img.real)
     img_resize = cv2.resize(img_s, (512, 512))
     cv2.WINDOW_NORMAL
     cv2.imshow(title, img_resize)
@@ -197,14 +196,13 @@ def _embedQrcode(message):
     Image.fromarray(qr).save(imgPath + 'QR.bmp')
     FFT('lena256.bmp', 'QR.bmp', save=True)
 
-
 def _decodeQrcode():
     qr = cv2.imread(outImgPath + 'extract_fft.bmp')
     return makeqr.decodeQrcode(np.uint8(qr))
 
 
 def main():
-    _embedQrcode('私はメルボルン大学でInternshipをしています！！。')
+    _embedQrcode('最大で400文字ちょい埋め込むことができます。')
     print(_decodeQrcode())
 
 if __name__ == '__main__':
