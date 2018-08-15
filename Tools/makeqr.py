@@ -1,4 +1,5 @@
 import qrcode
+import math
 import zbarlight
 import numpy as np
 from PIL import Image
@@ -36,11 +37,23 @@ def decode_qrcode(data):
 
     return codes
 
+def qrsizeChange(array):
+    m_f = np.log2(len(array))
+    m_i = np.ceil(m_f)
+    next_pow2 =  int(np.log2(2 ** m_i))
+    img = Image.fromarray(np.uint8(array))
+    img = img.resize((int(math.pow(2, next_pow2)), int(math.pow(2, next_pow2))))
+    img = np.asarray(img)
+    img.flags.writeable = True
+    return img
+
 
 def main():
-    tmp = generate_qrcode('あ，4％＄＠?>/kfgejabjdfk確かに')
-    # decode部分を追加
-    print(decode_qrcode(tmp))
+    # encode
+    tmp = generate_qrcode('私はオーストラリアでInternshipをしています！')
+    # decode
+    tmp_a = qrsizeChange(tmp)
+    print(decode_qrcode(tmp_a))
 
 
 
