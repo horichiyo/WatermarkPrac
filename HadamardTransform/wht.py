@@ -115,9 +115,9 @@ def embed(coverImgName=imgName, watermarkingImgName=watermarkingImgName):
 	F = hadamardTransform(hadamard, G, N)
 
 	# 埋め込み後の変換係数
-	_show(G)
+	# _show(G)
 	# 埋め込み後の画像
-	_show(F)
+	# _show(F)
 
 	return G
 
@@ -155,7 +155,8 @@ def _show(array):
 
 def main():
 	# extract(embed(coverImgName=imgName, watermarkingImgName=watermarkingImgName))
-	print(decodeQr(embedQr('こんにちは')))
+	# なんかひらがな数文字たまに表示がうまくいかないので要修正（スマホのQRリーダで読み取るとうまくいく 文字コードの問題？）
+	print(decodeQr(embedQr('こんに')))
 
 if __name__ == '__main__':
 	main()
