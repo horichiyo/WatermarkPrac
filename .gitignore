@@ -3,3 +3,4 @@
 images/
 .DS_Store
 */__pycache__/
+/Kivy/fonts/

@@ -1,8 +1,13 @@
 # -*- coding: utf-8 -*-
 from kivy.app import App
 from kivy.uix.widget import Widget
-
 from kivy.properties import StringProperty
+from kivy.core.text import LabelBase, DEFAULT_FONT
+from kivy.resources import resource_add_path
+
+# デフォルトに使用するフォントを変更する
+resource_add_path('./fonts')
+LabelBase.register(DEFAULT_FONT, 'ipaexg.ttf')
 
 import sys
 sys.path.append('..')
@@ -10,10 +15,12 @@ from Tools import makeqr
 
 class TestWidget(Widget):
     text = StringProperty()
+    image_src =StringProperty()
 
     def __init__(self, **kwargs):
         super(TestWidget, self).__init__(**kwargs)
-        self.text = 'This is Wartermarking Demo App.'
+        self.text = 'This is Wartermarking Demo App.ああ'
+        self.image_src = '../Images/lena256.bmp'
 
     def buttonClicked(self):
         self.text = 'Embed'

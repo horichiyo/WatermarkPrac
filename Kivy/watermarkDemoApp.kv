@@ -5,12 +5,24 @@ TestWidget: # ルートに追加
     BoxLayout:
         orientation: 'vertical'
         size: root.size
+        canvas.before:
+            Color:
+                rgba: 0, 0, 0, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
 
         # ラベル
         Label:
+            size_hint_y: 0.5
             id: label1
-            font_size: 68
+            font_size: 65
             text: root.text
+
+        Image:
+            size_hint_y: 0.5
+            allow_stretch: True
+            source: root.image_src
 
         BoxLayout:
             size_hint_y: 0.3
