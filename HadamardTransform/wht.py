@@ -1,5 +1,7 @@
 import math
 import sys
+sys.path.append('..')
+from Tools import makeqr
 import numpy as np
 from PIL import Image
 
@@ -102,7 +104,7 @@ def embed(coverImgName=imgName, watermarkingImgName=watermarkingImgName):
 
 	# 並べ替え済みアダマール行列の生成
 	hadamard = sequence(generateHadamard(N))
-	_show(hadamard)
+	# _show(hadamard)
 
 	# アダマール変換 G -> 変換係数
 	G = hadamardTransform(hadamard, img_y, N)
@@ -120,7 +122,7 @@ def embed(coverImgName=imgName, watermarkingImgName=watermarkingImgName):
 	return G
 
 
-def extract(G):
+def extract(G, get=False):
 	# 変換係数の大きさチェック（返り値が2のべき乗なので使っている）
 	N = sizeCheck(len(G), len(G[0]))
 	hadamard = sequence(generateHadamard(N))
@@ -130,6 +132,20 @@ def extract(G):
 
 	_show(ex)
 
+	if get==True:
+		return ex
+
+
+def embedQr(message):
+	qr = makeqr.generateQrcode(message)
+	# qr = makeqr.qrsizeChange(qr)
+	Image.fromarray(np.uint8(qr)).save(imgPath + 'QR.bmp')
+	return embed(coverImgName=imgName, watermarkingImgName='QR.bmp')
+
+def decodeQr(G):
+	ex = extract(G,get=True)
+	return makeqr.decodeQrcode(np.uint8(ex))
+
 
 def _show(array):
 	Image.fromarray(np.uint8(array)).show()
@@ -138,9 +154,8 @@ def _show(array):
 
 
 def main():
-	extract(embed(coverImgName=imgName, watermarkingImgName=watermarkingImgName))
-
-
+	# extract(embed(coverImgName=imgName, watermarkingImgName=watermarkingImgName))
+	print(decodeQr(embedQr('こんにちは')))
 
 if __name__ == '__main__':
 	main()
