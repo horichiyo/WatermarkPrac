@@ -14,7 +14,7 @@ wavelet    = 'haar'  # wavelist.txtにどれを指定できるか書いてある
 level      = 1
 
 
-def DWT_gray(coverImageName, watermarkImageName):
+def DWT_gray(coverImageName, watermarkImageName, save=False):
     coverImage = cv2.imread(imgPath+coverImageName)
     watermarkImage = cv2.imread(imgPath+watermarkImageName)
     watermarkImage = cv2.resize(watermarkImage, (int(len(coverImage)/2), int(len(coverImage)/2)))
@@ -47,6 +47,9 @@ def DWT_gray(coverImageName, watermarkImageName):
     extracted = np.uint8(extracted)
 
     _show(extracted, title='Extracted Image')
+
+    if save == True:
+        Image.fromarray(extracted).save(outImgPath + 'extract_dwt.bmp')
 
 
 def DWT_color(coverImageName, watermarkImageName):
@@ -190,19 +193,25 @@ def _show(img,title='title'):
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
-def _embedQrcode(message):
+def _embedQrcodeUseFFT(message):
     qr = makeqr.generateQrcode(message)
     qr = makeqr.qrsizeChange(qr)
     Image.fromarray(qr).save(imgPath + 'QR.bmp')
     FFT('lena256.bmp', 'QR.bmp', save=True)
 
+def _embedQrcodeUseDwt(message):
+    qr = makeqr.generateQrcode(message)
+    qr = makeqr.qrsizeChange(qr)
+    Image.fromarray(qr).save(imgPath + 'QR.bmp')
+    DWT_gray('lena512.bmp', 'QR.bmp', save=True)
+
 def _decodeQrcode():
-    qr = cv2.imread(outImgPath + 'extract_fft.bmp')
+    qr = cv2.imread(outImgPath + 'extract_dwt.bmp')
     return makeqr.decodeQrcode(np.uint8(qr))
 
 
 def main():
-    _embedQrcode('最大で400文字ちょい埋め込むことができます。')
+    _embedQrcodeUseDwt('最大で400文字ちょい埋め込むことができます。')
     print(_decodeQrcode())
 
 if __name__ == '__main__':
