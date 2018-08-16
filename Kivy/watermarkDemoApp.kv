@@ -1,0 +1,33 @@
+# -*- coding: utf-8 -*-
+TestWidget: # ルートに追加
+
+<TestWidget>:
+    BoxLayout:
+        orientation: 'vertical'
+        size: root.size
+
+        # ラベル
+        Label:
+            id: label1
+            font_size: 68
+            text: root.text
+
+        BoxLayout:
+            size_hint_y: 0.3
+            Button:
+                id: button1
+                text: "Embed"
+                font_size: 68
+                on_press: root.buttonClicked()  # ボタンをクリックした時
+
+            Button:
+                id: button2
+                text: "Show"
+                font_size: 68
+                on_press: root.buttonClicked2()  # ボタンをクリックした時
+
+            Button:
+                id: button3
+                text: "Extract"
+                font_size: 68
+                on_press: root.buttonClicked3()  # ボタンをクリックした時
