@@ -25,7 +25,7 @@ TestWidget: # ルートに追加
             source: root.image_src
 
         BoxLayout:
-            size_hint_y: 0.3
+            size_hint_y: 0.1
             Button:
                 id: button1
                 text: "Embed"
@@ -43,3 +43,24 @@ TestWidget: # ルートに追加
                 text: "Extract"
                 font_size: 68
                 on_press: root.buttonClicked3()  # ボタンをクリックした時
+
+            Button:
+                id: button4
+                text: "Description"
+                font_size: 50
+                on_press: root.descriptionButtonClicked()  # ボタンをクリックした時
+
+<DescriptionView>:
+    size_hint: None, None
+    size: 800, 500
+    auto_dismiss: False
+    BoxLayout:
+        orientation: "vertical"
+        Label:
+            text: "#I need to write description in this area."
+            font_size: 30
+        BoxLayout:
+            padding: 200, 100
+            Button:
+                text: "Yes"
+                on_press: root.clearButtonClicked()

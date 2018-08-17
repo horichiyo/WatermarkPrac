@@ -4,6 +4,7 @@ from kivy.uix.widget import Widget
 from kivy.properties import StringProperty
 from kivy.core.text import LabelBase, DEFAULT_FONT
 from kivy.resources import resource_add_path
+from kivy.uix.modalview import ModalView
 
 # デフォルトに使用するフォントを変更する
 resource_add_path('./fonts')
@@ -30,6 +31,18 @@ class TestWidget(Widget):
 
     def buttonClicked3(self):
         self.text = 'Extract'
+
+    def descriptionButtonClicked(self):
+        descriptionView = DescriptionView()
+        descriptionView.open()
+
+
+class DescriptionView(ModalView):
+    def __init__(self, **kwargs):
+        super(DescriptionView, self).__init__(**kwargs)
+
+    def clearButtonClicked(self):
+        self.dismiss()
 
 
 class WatermarkDemoApp(App):
