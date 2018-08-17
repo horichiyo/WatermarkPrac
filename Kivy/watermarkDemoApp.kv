@@ -13,11 +13,17 @@ TestWidget: # ルートに追加
                 size: self.size
 
         # ラベル
-        Label:
-            size_hint_y: 0.5
-            id: label1
-            font_size: 65
-            text: root.text
+        # Label:
+        #     size_hint_y: 0.5
+        #     id: label1
+        #     font_size: 65
+        #     text: root.text
+        TextInput:
+            id: text_box
+            size_hint_x: 70
+            font_size: 68
+            focus: True
+            on_text_validate: root.embedButtonClicked()
 
         Image:
             size_hint_y: 0.5
@@ -30,26 +36,26 @@ TestWidget: # ルートに追加
                 id: button1
                 text: "Embed"
                 font_size: 68
-                on_press: root.buttonClicked()  # ボタンをクリックした時
+                on_press: root.embedButtonClicked()
 
             Button:
                 id: button2
                 text: "Show"
                 font_size: 68
-                on_press: root.buttonClicked2()  # ボタンをクリックした時
+                on_press: root.buttonClicked2()
 
             Button:
                 id: button3
                 text: "Extract"
                 font_size: 68
-                on_press: root.buttonClicked3()  # ボタンをクリックした時
+                on_press: root.buttonClicked3()
 
             Button:
                 id: button4
                 text: "Description"
                 font_size: 50
-                on_press: root.descriptionButtonClicked()  # ボタンをクリックした時
-
+                on_press: root.descriptionButtonClicked()
+                
 <DescriptionView>:
     size_hint: None, None
     size: 800, 500
