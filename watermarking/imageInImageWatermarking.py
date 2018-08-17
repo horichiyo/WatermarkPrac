@@ -153,7 +153,7 @@ def FFT(coverImageName, watermarkImageName, save=False):
     watermarkedImage = _calcFFT(coverImage, watermarkImage, 0.1)
     # BGR -> RGBに変換
     watermarkedImage_rgb = watermarkedImage[:, :, ::-1].copy()
-    Image.fromarray(np.uint8(watermarkedImage_rgb)).save(outImgPath + 'stego_fft.bmp')
+    Image.fromarray(np.uint8(watermarkedImage_rgb.real)).save(outImgPath + 'stego_fft.bmp')
 
     # _show(watermarkedImage, 'Watermarked Image')
 
