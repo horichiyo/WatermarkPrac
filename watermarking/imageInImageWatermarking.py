@@ -151,8 +151,9 @@ def FFT(coverImageName, watermarkImageName, save=False):
 
     # embed
     watermarkedImage = _calcFFT(coverImage, watermarkImage, 0.1)
+    Image.fromarray(np.uint8(watermarkedImage)).save(outImgPath + 'stego_fft.bmp')
 
-    # _show(watermarkedImage, 'Watermarked Image')
+    _show(watermarkedImage, 'Watermarked Image')
 
     # extract
     extractImage = _calcIFFT(coverImage, watermarkedImage, 0.1)

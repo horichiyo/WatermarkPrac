@@ -6,19 +6,21 @@ from kivy.core.text import LabelBase, DEFAULT_FONT
 from kivy.resources import resource_add_path
 from kivy.uix.modalview import ModalView
 
-# デフォルトに使用するフォントを変更する
-resource_add_path('./fonts')
-LabelBase.register(DEFAULT_FONT, 'ipaexg.ttf')
-
+from PIL import Image
 import sys
 sys.path.append('..')
 from Tools import makeqr
 from watermarking import imageInImageWatermarking
 
+# デフォルトに使用するフォントを変更する
+resource_add_path('./fonts')
+LabelBase.register(DEFAULT_FONT, 'ipaexg.ttf')
+
 
 class TestWidget(Widget):
     text = StringProperty()
-    image_src =StringProperty()
+    cover_image_src =StringProperty()
+    stego_image_src =StringProperty()
     embed_message = StringProperty()
     extract_message = StringProperty()
 
@@ -26,7 +28,8 @@ class TestWidget(Widget):
     def __init__(self, **kwargs):
         super(TestWidget, self).__init__(**kwargs)
         self.text = 'This is Wartermarking Demo App.ああ'
-        self.image_src = '../Images/lena256.bmp'
+        self.cover_image_src = '../Images/lena256.bmp'
+        self.stego_image_src = '../Images/result/stego_fft.bmp'
 
     def embedButtonClicked(self):
         self.text = 'Embed'
@@ -35,6 +38,7 @@ class TestWidget(Widget):
 
     def buttonClicked2(self):
         self.text = 'Show'
+
 
     def buttonClicked3(self):
         self.text = 'Extract'

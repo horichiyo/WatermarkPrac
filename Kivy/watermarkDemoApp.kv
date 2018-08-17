@@ -20,15 +20,30 @@ TestWidget: # ルートに追加
         #     text: root.text
         TextInput:
             id: text_box
-            size_hint_x: 70
+            text: 'ここに埋め込む文字を入力してね'
+            size_hint_y: 0.5
             font_size: 68
             focus: True
             on_text_validate: root.embedButtonClicked()
-
-        Image:
-            size_hint_y: 0.5
-            allow_stretch: True
-            source: root.image_src
+        BoxLayout:
+            Label:
+                # size_hint_y: 0.5
+                id: label1
+                font_size: 50
+                text: 'Cover ->'
+            Image:
+                # size_hint_y: 0.5
+                allow_stretch: True
+                source: root.cover_image_src
+            Image:
+                # size_hint_y: 0.5
+                allow_stretch: True
+                source: root.stego_image_src
+            Label:
+                # size_hint_y: 0.5
+                id: label1
+                font_size: 50
+                text: '<- Stego'
 
         BoxLayout:
             size_hint_y: 0.1
@@ -55,7 +70,7 @@ TestWidget: # ルートに追加
                 text: "Description"
                 font_size: 50
                 on_press: root.descriptionButtonClicked()
-                
+
 <DescriptionView>:
     size_hint: None, None
     size: 800, 500
