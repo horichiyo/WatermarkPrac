@@ -146,18 +146,18 @@ def FFT(coverImageName, watermarkImageName, save=False):
     watermarkImage = cv2.imread(imgPath + watermarkImageName)
     watermarkImage = cv2.resize(watermarkImage, (int(len(coverImage)), int(len(coverImage))))
 
-    _show(coverImage, title='Cover Image')
-    _show(watermarkImage, title='watermarkImage')
+    # _show(coverImage, title='Cover Image')
+    # _show(watermarkImage, title='watermarkImage')
 
     # embed
     watermarkedImage = _calcFFT(coverImage, watermarkImage, 0.1)
 
-    _show(watermarkedImage, 'Watermarked Image')
+    # _show(watermarkedImage, 'Watermarked Image')
 
     # extract
     extractImage = _calcIFFT(coverImage, watermarkedImage, 0.1)
 
-    _show(extractImage, 'Extract Image')
+    # _show(extractImage, 'Extract Image')
 
     if (save==True):
         Image.fromarray(np.uint8(extractImage)).save(outImgPath + 'extract_fft.bmp')
@@ -193,28 +193,26 @@ def _show(img,title='title'):
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
-def _embedQrcodeUseFFT(message):
+def embedQrcodeUseFFT(message):
     qr = makeqr.generateQrcode(message)
     qr = makeqr.qrsizeChange(qr)
     Image.fromarray(qr).save(imgPath + 'QR.bmp')
     FFT('lena256.bmp', 'QR.bmp', save=True)
 
-def _embedQrcodeUseDwt(message):
+def embedQrcodeUseDwt(message):
     qr = makeqr.generateQrcode(message)
     qr = makeqr.qrsizeChange(qr)
     Image.fromarray(qr).save(imgPath + 'QR.bmp')
     DWT_gray('lena512.bmp', 'QR.bmp', save=True)
 
-def _decodeQrcode():
-    qr = cv2.imread(outImgPath + 'extract_dwt.bmp')
+def decodeQrcode(mode):
+    qr = cv2.imread(outImgPath + 'extract_'+mode+'.bmp')
     return makeqr.decodeQrcode(np.uint8(qr))
 
 
 def main():
-    _embedQrcodeUseDwt('最大で400文字ちょい埋め込むことができます。')
-    print(_decodeQrcode())
+    embedQrcodeUseDwt('最大で400文字ちょい埋め込むことができます。')
+    print(decodeQrcode('dwt'))
 
 if __name__ == '__main__':
     main()
-
-
