@@ -151,9 +151,11 @@ def FFT(coverImageName, watermarkImageName, save=False):
 
     # embed
     watermarkedImage = _calcFFT(coverImage, watermarkImage, 0.1)
-    Image.fromarray(np.uint8(watermarkedImage)).save(outImgPath + 'stego_fft.bmp')
+    # BGR -> RGBに変換
+    watermarkedImage_rgb = watermarkedImage[:, :, ::-1].copy()
+    Image.fromarray(np.uint8(watermarkedImage_rgb)).save(outImgPath + 'stego_fft.bmp')
 
-    _show(watermarkedImage, 'Watermarked Image')
+    # _show(watermarkedImage, 'Watermarked Image')
 
     # extract
     extractImage = _calcIFFT(coverImage, watermarkedImage, 0.1)
@@ -161,7 +163,9 @@ def FFT(coverImageName, watermarkImageName, save=False):
     # _show(extractImage, 'Extract Image')
 
     if (save==True):
-        Image.fromarray(np.uint8(extractImage)).save(outImgPath + 'extract_fft.bmp')
+        # BGR -> RGBに変換
+        extractImage_rgb = extractImage[:, :, ::-1].copy()
+        Image.fromarray(np.uint8(extractImage_rgb)).save(outImgPath + 'extract_fft.bmp')
 
 
 def _calcFFT(coverMat, watermarkMat, strength):
