@@ -17,7 +17,7 @@ resource_add_path('./fonts')
 LabelBase.register(DEFAULT_FONT, 'ipaexg.ttf')
 
 
-class TestWidget(Widget):
+class AppWidget(Widget):
     text = StringProperty()
     cover_image_src =StringProperty()
     stego_image_src =StringProperty()
@@ -26,8 +26,8 @@ class TestWidget(Widget):
 
 
     def __init__(self, **kwargs):
-        super(TestWidget, self).__init__(**kwargs)
-        self.text = 'This is Wartermarking Demo App.ああ'
+        super(AppWidget, self).__init__(**kwargs)
+        self.extract_message = '抽出した文字はここに表示されます。'
         self.cover_image_src = '../Images/lena256.bmp'
         self.stego_image_src = '../Images/result/stego_fft.bmp'
 
@@ -36,14 +36,12 @@ class TestWidget(Widget):
         self.embed_message =  self.ids["text_box"].text
         imageInImageWatermarking.embedQrcodeUseFFT(self.embed_message)
 
-    def buttonClicked2(self):
-        self.text = 'Show'
 
-
-    def buttonClicked3(self):
+    def extractButtonClicked(self):
+        extractMessageView = ExtractMessageView()
         self.text = 'Extract'
-        extract_message = imageInImageWatermarking.decodeQrcode('fft')
-        print(extract_message)
+        # self.extract_message = imageInImageWatermarking.decodeQrcode('fft')
+        extractMessageView.open()
 
     def descriptionButtonClicked(self):
         descriptionView = DescriptionView()
@@ -53,6 +51,17 @@ class TestWidget(Widget):
 class DescriptionView(ModalView):
     def __init__(self, **kwargs):
         super(DescriptionView, self).__init__(**kwargs)
+
+    def clearButtonClicked(self):
+        self.dismiss()
+
+
+class ExtractMessageView(ModalView):
+    extract_message = StringProperty()
+    def __init__(self, **kwargs):
+        super(ExtractMessageView, self).__init__(**kwargs)
+        self.extract_message = imageInImageWatermarking.decodeQrcode('fft')
+
 
     def clearButtonClicked(self):
         self.dismiss()

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-TestWidget: # ルートに追加
+AppWidget:
 
-<TestWidget>:
+<AppWidget>:
     BoxLayout:
         orientation: 'vertical'
         size: root.size
@@ -12,12 +12,6 @@ TestWidget: # ルートに追加
                 pos: self.pos
                 size: self.size
 
-        # ラベル
-        # Label:
-        #     size_hint_y: 0.5
-        #     id: label1
-        #     font_size: 65
-        #     text: root.text
         TextInput:
             id: text_box
             text: 'ここに埋め込む文字を入力してね'
@@ -27,20 +21,16 @@ TestWidget: # ルートに追加
             on_text_validate: root.embedButtonClicked()
         BoxLayout:
             Label:
-                # size_hint_y: 0.5
                 id: label1
                 font_size: 50
                 text: 'Cover ->'
             Image:
-                # size_hint_y: 0.5
                 allow_stretch: True
                 source: root.cover_image_src
             Image:
-                # size_hint_y: 0.5
                 allow_stretch: True
                 source: root.stego_image_src
             Label:
-                # size_hint_y: 0.5
                 id: label1
                 font_size: 50
                 text: '<- Stego'
@@ -52,24 +42,17 @@ TestWidget: # ルートに追加
                 text: "Embed"
                 font_size: 68
                 on_press: root.embedButtonClicked()
-
-            # Button:
-            #     id: button2
-            #     text: "Show"
-            #     font_size: 68
-            #     on_press: root.buttonClicked2()
-
             Button:
                 id: button3
                 text: "Extract"
                 font_size: 68
-                on_press: root.buttonClicked3()
-
+                on_press: root.extractButtonClicked()
             Button:
                 id: button4
                 text: "Description"
                 font_size: 50
                 on_press: root.descriptionButtonClicked()
+
 
 <DescriptionView>:
     size_hint: None, None
@@ -78,10 +61,26 @@ TestWidget: # ルートに追加
     BoxLayout:
         orientation: "vertical"
         Label:
-            text: "#I need to write description in this area."
+            text: "I need to write description in this area."
             font_size: 30
         BoxLayout:
             padding: 200, 100
             Button:
-                text: "Yes"
+                text: "OK"
+                on_press: root.clearButtonClicked()
+
+
+<ExtractMessageView>:
+    size_hint: None, None
+    size: 800, 500
+    auto_dismiss: False
+    BoxLayout:
+        orientation: "vertical"
+        Label:
+            text: root.extract_message
+            font_size: 30
+        BoxLayout:
+            padding: 200, 100
+            Button:
+                text: "OK"
                 on_press: root.clearButtonClicked()
