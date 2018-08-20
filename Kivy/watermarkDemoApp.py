@@ -23,24 +23,25 @@ class AppWidget(Widget):
     stego_image_src =StringProperty()
     embed_message = StringProperty()
     extract_message = StringProperty()
-
+    psnr = StringProperty()
 
     def __init__(self, **kwargs):
         super(AppWidget, self).__init__(**kwargs)
         self.extract_message = '抽出した文字はここに表示されます。'
         self.cover_image_src = '../Images/lena256.bmp'
-        self.stego_image_src = '../Images/result/stego_fft.bmp'
+        self.stego_image_src = '../Images/stegosaurus.png'
+        self.psnr = ''
 
     def embedButtonClicked(self):
         self.text = 'Embed'
         self.embed_message =  self.ids["text_box"].text
         imageInImageWatermarking.embedQrcodeUseFFT(self.embed_message)
-
+        self.stego_image_src = '../Images/result/stego_fft.bmp'
 
     def extractButtonClicked(self):
         extractMessageView = ExtractMessageView()
         self.text = 'Extract'
-        # self.extract_message = imageInImageWatermarking.decodeQrcode('fft')
+        self.psnr = str(imageInImageWatermarking.psnr(self.cover_image_src, self.stego_image_src))
         extractMessageView.open()
 
     def descriptionButtonClicked(self):
@@ -58,10 +59,10 @@ class DescriptionView(ModalView):
 
 class ExtractMessageView(ModalView):
     extract_message = StringProperty()
+
     def __init__(self, **kwargs):
         super(ExtractMessageView, self).__init__(**kwargs)
         self.extract_message = imageInImageWatermarking.decodeQrcode('fft')
-
 
     def clearButtonClicked(self):
         self.dismiss()

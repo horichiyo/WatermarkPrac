@@ -27,30 +27,44 @@ AppWidget:
             Image:
                 allow_stretch: True
                 source: root.cover_image_src
+                center_x: self.parent.center_x
+                center_y: self.parent.center_y
             Image:
                 allow_stretch: True
                 source: root.stego_image_src
+                center_x: self.parent.center_x
+                center_y: self.parent.center_y
             Label:
                 id: label1
                 font_size: 50
                 text: '<- Stego'
 
+        Label:
+            size_hint_y: 0.1
+            text: 'PSNR: '+root.psnr+'[dB]'
+            font_size: 30
+
         BoxLayout:
             size_hint_y: 0.1
             Button:
                 id: button1
-                text: "Embed"
+                text: 'Embed'
                 font_size: 68
                 on_press: root.embedButtonClicked()
             Button:
-                id: button3
-                text: "Extract"
+                id: button2
+                text: 'Extract'
                 font_size: 68
                 on_press: root.extractButtonClicked()
             Button:
+                id: button3
+                text: 'Manual'
+                font_size: 68
+                on_press: root.descriptionButtonClicked()
+            Button:
                 id: button4
-                text: "Description"
-                font_size: 50
+                text: 'Desceription'
+                font_size: 68
                 on_press: root.descriptionButtonClicked()
 
 

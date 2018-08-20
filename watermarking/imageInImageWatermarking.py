@@ -5,6 +5,7 @@ from DiscreteWaveletTransform import dwt
 from Tools import makeqr
 import pywt
 import cv2
+import math
 import numpy as np
 from PIL import Image
 
@@ -168,6 +169,31 @@ def FFT(coverImageName, watermarkImageName, save=False):
         Image.fromarray(np.uint8(extractImage_rgb)).save(outImgPath + 'extract_fft.bmp')
 
 
+def embedQrcodeUseFFT(message):
+    qr = makeqr.generateQrcode(message)
+    qr = makeqr.qrsizeChange(qr)
+    Image.fromarray(qr).save(imgPath + 'QR.bmp')
+    FFT('lena256.bmp', 'QR.bmp', save=True)
+
+def embedQrcodeUseDwt(message):
+    qr = makeqr.generateQrcode(message)
+    qr = makeqr.qrsizeChange(qr)
+    Image.fromarray(qr).save(imgPath + 'QR.bmp')
+    DWT_gray('lena512.bmp', 'QR.bmp', save=True)
+
+def decodeQrcode(mode):
+    qr = cv2.imread(outImgPath + 'extract_'+mode+'.bmp')
+    return makeqr.decodeQrcode(np.uint8(qr))
+
+def psnr(cover, stego):
+    coverImg = np.array(Image.open(cover), 'f')
+    stegoImg = np.array(Image.open(stego), 'f')
+    mse = np.mean((coverImg-stegoImg)**2)
+    if mse == 0:
+        return math.inf
+    PIXEL_MAX = 255.0
+    return 20 * math.log10(PIXEL_MAX/math.sqrt(mse))
+
 def _calcFFT(coverMat, watermarkMat, strength):
     shiftedFFT = np.fft.fftshift(np.fft.fft2(coverMat))
     watermarkedFFT = shiftedFFT + strength*watermarkMat
@@ -197,23 +223,6 @@ def _show(img,title='title'):
     cv2.imshow(title, img_resize)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
-
-def embedQrcodeUseFFT(message):
-    qr = makeqr.generateQrcode(message)
-    qr = makeqr.qrsizeChange(qr)
-    Image.fromarray(qr).save(imgPath + 'QR.bmp')
-    FFT('lena256.bmp', 'QR.bmp', save=True)
-
-def embedQrcodeUseDwt(message):
-    qr = makeqr.generateQrcode(message)
-    qr = makeqr.qrsizeChange(qr)
-    Image.fromarray(qr).save(imgPath + 'QR.bmp')
-    DWT_gray('lena512.bmp', 'QR.bmp', save=True)
-
-def decodeQrcode(mode):
-    qr = cv2.imread(outImgPath + 'extract_'+mode+'.bmp')
-    return makeqr.decodeQrcode(np.uint8(qr))
-
 
 def main():
     embedQrcodeUseDwt('最大で400文字ちょい埋め込むことができます。')
