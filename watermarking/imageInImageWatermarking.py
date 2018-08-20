@@ -188,11 +188,13 @@ def decodeQrcode(mode):
 def psnr(cover, stego):
     coverImg = np.array(Image.open(cover), 'f')
     stegoImg = np.array(Image.open(stego), 'f')
+    if coverImg.shape != stegoImg.shape:
+        return '?'
     mse = np.mean((coverImg-stegoImg)**2)
     if mse == 0:
         return math.inf
     PIXEL_MAX = 255.0
-    return 20 * math.log10(PIXEL_MAX/math.sqrt(mse))
+    return round(20 * math.log10(PIXEL_MAX/math.sqrt(mse)), 3)
 
 def _calcFFT(coverMat, watermarkMat, strength):
     shiftedFFT = np.fft.fftshift(np.fft.fft2(coverMat))
