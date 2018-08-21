@@ -57,8 +57,8 @@ class AppWidget(Widget):
         extractMessageView.open()
 
     def manualButtonClicked(self):
-        modeView = ModeView()
-        modeView.open()
+        manualView = ManualView()
+        manualView.open()
 
     def modeButtonClicked(self):
         content = ModeSelectPopUp(fft=self.useFFT, dwt=self.useDWT, text='You can select the method to use for watermarking.')
