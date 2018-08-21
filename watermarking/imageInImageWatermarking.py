@@ -38,7 +38,7 @@ def DWT_gray(coverImageName, watermarkImageName, save=False):
     coeffW = cA, (cH, cV, 0.4*cD+0.1*watermarkImage_y)
 
     watermarkedImage = pywt.idwt2(coeffW, wavelet)
-    _show(watermarkedImage, title='Watermarked Image')
+    # _show(watermarkedImage, title='Watermarked Image')
 
     # Extraction
     coeffWM = pywt.dwt2(watermarkedImage, wavelet)
@@ -47,10 +47,10 @@ def DWT_gray(coverImageName, watermarkImageName, save=False):
     extracted = (hD - 0.4*cD) / 0.1
     extracted = np.uint8(extracted)
 
-    _show(extracted, title='Extracted Image')
+    # _show(extracted, title='Extracted Image')
 
     if save == True:
-        Image.fromarray(extracted).save(outImgPath + 'extract_dwt.bmp')
+        Image.fromarray(extracted).save(outImgPath + 'extract.bmp')
 
 
 def DWT_color(coverImageName, watermarkImageName, save=False):
@@ -77,9 +77,7 @@ def DWT_color(coverImageName, watermarkImageName, save=False):
         watermarkedImage = pywt.idwt2(coeffW, wavelet)
         coverImage_ycc[:,:,0] = watermarkedImage
         stego_bgr = cv2.cvtColor(coverImage_ycc, cv2.COLOR_YCrCb2BGR)
-
         cv2.imwrite(outImgPath + 'stego_dwt.bmp', stego_bgr)
-        # Image.fromarray(np.uint8(stego_rgb.real)).save(outImgPath + 'stego_dwt.bmp')
 
         # Extraction
         coeffWM = pywt.dwt2(watermarkedImage, wavelet)
@@ -91,7 +89,7 @@ def DWT_color(coverImageName, watermarkImageName, save=False):
         # _show(extracted, title='Extracted Image')
 
         if save == True:
-            Image.fromarray(extracted).save(outImgPath + 'extract_dwt.bmp')
+            Image.fromarray(extracted).save(outImgPath + 'extract.bmp')
 
 
 def FFT(coverImageName, watermarkImageName, save=False):
@@ -118,7 +116,7 @@ def FFT(coverImageName, watermarkImageName, save=False):
     if (save==True):
         # BGR -> RGBに変換
         extractImage_rgb = extractImage[:, :, ::-1].copy()
-        Image.fromarray(np.uint8(extractImage_rgb)).save(outImgPath + 'extract_fft.bmp')
+        Image.fromarray(np.uint8(extractImage_rgb)).save(outImgPath + 'extract.bmp')
 
 
 def embedQrcodeUseFFT(message):
@@ -127,14 +125,14 @@ def embedQrcodeUseFFT(message):
     Image.fromarray(qr).save(imgPath + 'QR.bmp')
     FFT('lena256.bmp', 'QR.bmp', save=True)
 
-def embedQrcodeUseDwt(message):
+def embedQrcodeUseDWT(message):
     qr = makeqr.generateQrcode(message)
     qr = makeqr.qrsizeChange(qr)
     Image.fromarray(qr).save(imgPath + 'QR.bmp')
     DWT_color('lena256.bmp', 'QR.bmp', save=True)
 
-def decodeQrcode(mode):
-    qr = cv2.imread(outImgPath + 'extract_'+mode+'.bmp')
+def decodeQrcode():
+    qr = cv2.imread(outImgPath + 'extract.bmp')
     return makeqr.decodeQrcode(np.uint8(qr))
 
 def psnr(cover, stego):
@@ -180,7 +178,7 @@ def _show(img,title='title'):
 
 def main():
     embedQrcodeUseDwt('最大で400文字埋め込むことができます。')
-    print(decodeQrcode('dwt'))
+    print(decodeQrcode())
 
 if __name__ == '__main__':
     main()

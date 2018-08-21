@@ -60,15 +60,15 @@ AppWidget:
                 id: button3
                 text: 'Manual'
                 font_size: 68
-                on_press: root.descriptionButtonClicked()
+                on_press: root.manualButtonClicked()
             Button:
                 id: button4
-                text: 'Desceription'
+                text: 'Mode:'+root.mode
                 font_size: 68
-                on_press: root.descriptionButtonClicked()
+                on_press: root.modeButtonClicked()
 
 
-<DescriptionView>:
+<ManualView>:
     size_hint: None, None
     size: 800, 500
     auto_dismiss: False
@@ -82,6 +82,27 @@ AppWidget:
             Button:
                 text: "OK"
                 on_press: root.clearButtonClicked()
+
+<ModeSelectPopUp>:
+    orientation: 'vertical'
+
+    Label:
+        size_hint: 1, .9
+        text: root.text
+
+    BoxLayout:
+        size_hint: 1, .1
+        orientation: 'horizontal'
+
+        Button:
+            size_hint: .5, 1
+            text: 'FFT'
+            on_release: root.fft()
+
+        Button:
+            size_hint: .5, 1
+            text: 'DWT'
+            on_release: root.dwt()
 
 
 <ExtractMessageView>:
