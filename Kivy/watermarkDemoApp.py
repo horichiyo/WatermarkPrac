@@ -51,10 +51,12 @@ class AppWidget(Widget):
             iw.embedQrcodeUseFFT(self.embed_message, cover=self.cover_image_src)
             self.stego_image_src = '../images/result/stego_fft.bmp'
             Clock.schedule_interval(self.update, 0.01)
+            self.psnr = str(iw.psnr('../Images/'+self.cover_image_src, self.stego_image_src))
         elif self.mode == 'DWT':
             iw.embedQrcodeUseDWT(self.embed_message, cover=self.cover_image_src)
             self.stego_image_src = '../images/result/stego_dwt.bmp'
             Clock.schedule_interval(self.update, 0.01)
+            self.psnr = str(iw.psnr('../Images/'+self.cover_image_src, self.stego_image_src))
 
     def update(self, dt):
         self.ids['img1'].reload()
@@ -62,8 +64,6 @@ class AppWidget(Widget):
     def extractButtonClicked(self):
         extractMessageView = ExtractMessageView()
         self.text = 'Extract'
-        self.psnr = str(iw.psnr('../Images/'+self.cover_image_src, self.stego_image_src))
-
         extractMessageView.open()
 
     def changeButtonClicked(self):
