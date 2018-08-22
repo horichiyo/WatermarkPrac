@@ -113,6 +113,8 @@ class ModeSelectPopUp(BoxLayout):
 
 class PopupChooseFile(BoxLayout):
     current_dir = os.path.dirname(os.path.abspath(__file__))
+    joined_path = os.path.join(current_dir, '../images/')
+    target_path = os.path.normpath(joined_path)
     select = ObjectProperty(None)
     cancel = ObjectProperty(None)
 

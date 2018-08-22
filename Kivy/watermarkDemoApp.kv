@@ -107,7 +107,7 @@ AppWidget:
 
 
 <ExtractMessageView>:
-    size_hint: 0.8, 1
+    size_hint: 1, 1
     auto_dismiss: False
     BoxLayout:
         orientation: "vertical"
@@ -116,7 +116,7 @@ AppWidget:
             font_size: 30
         BoxLayout:
             Button:
-                size_hint: 0.8, 0.1
+                size_hint: .8, .2
                 text: "OK"
                 on_press: root.clearButtonClicked()
 
@@ -133,7 +133,7 @@ AppWidget:
 
     FileChooserIconView:
         size_hint: 1, .9
-        path: root.current_dir
+        path: root.joined_path
         on_submit: root.select(self.selection[0])
     BoxLayout:
         size_hint: 1, .1
