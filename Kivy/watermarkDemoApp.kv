@@ -26,10 +26,11 @@ AppWidget:
                 text: 'Cover ->'
             Image:
                 allow_stretch: True
-                source: '../Images/'+root.cover_image_src
+                source: root.cover_image_path
                 center_x: self.parent.center_x
                 center_y: self.parent.center_y
             Image:
+                id: img1
                 allow_stretch: True
                 source: root.stego_image_src
                 center_x: self.parent.center_x

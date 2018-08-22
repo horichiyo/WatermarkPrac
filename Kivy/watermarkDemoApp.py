@@ -9,6 +9,7 @@ from kivy.uix.modalview import ModalView
 from kivy.uix.popup import Popup
 from kivy.uix.button import Button
 from kivy.uix.boxlayout import BoxLayout
+from kivy.clock import Clock
 
 import os
 from PIL import Image
@@ -25,6 +26,7 @@ LabelBase.register(DEFAULT_FONT, 'ipaexg.ttf')
 class AppWidget(Widget):
     text = StringProperty()
     cover_image_src =StringProperty()
+    cover_image_path =StringProperty()
     stego_image_src =StringProperty()
     embed_message = StringProperty()
     extract_message = StringProperty()
@@ -36,6 +38,7 @@ class AppWidget(Widget):
         super(AppWidget, self).__init__(**kwargs)
         self.extract_message = '抽出した文字はここに表示されます。'
         self.cover_image_src = 'lena256.bmp'
+        self.cover_image_path = '../images/lena256.bmp'
         self.stego_image_src = '../Images/stegosaurus.png'
         self.psnr = ''
         self.mode = 'FFT'
@@ -46,10 +49,15 @@ class AppWidget(Widget):
 
         if self.mode == 'FFT':
             iw.embedQrcodeUseFFT(self.embed_message, cover=self.cover_image_src)
-            self.stego_image_src = '../Images/result/stego_fft.bmp'
+            self.stego_image_src = '../images/result/stego_fft.bmp'
+            Clock.schedule_interval(self.update, 0.01)
         elif self.mode == 'DWT':
             iw.embedQrcodeUseDWT(self.embed_message, cover=self.cover_image_src)
-            self.stego_image_src = '../Images/result/stego_dwt.bmp'
+            self.stego_image_src = '../images/result/stego_dwt.bmp'
+            Clock.schedule_interval(self.update, 0.01)
+
+    def update(self, dt):
+        self.ids['img1'].reload()
 
     def extractButtonClicked(self):
         extractMessageView = ExtractMessageView()
@@ -65,6 +73,7 @@ class AppWidget(Widget):
 
     def selectFile(self, file_path):
         self.cover_image_src = os.path.basename(file_path)
+        self.cover_image_path= '../images/'+os.path.basename(file_path)
         self.popup.dismiss()
 
     def cancelButtonClicked(self):
