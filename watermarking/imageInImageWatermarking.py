@@ -119,17 +119,17 @@ def FFT(coverImageName, watermarkImageName, save=False):
         Image.fromarray(np.uint8(extractImage_rgb)).save(outImgPath + 'extract.bmp')
 
 
-def embedQrcodeUseFFT(message):
+def embedQrcodeUseFFT(message, cover='lena512.bmp'):
     qr = makeqr.generateQrcode(message)
     qr = makeqr.qrsizeChange(qr)
     Image.fromarray(qr).save(imgPath + 'QR.bmp')
-    FFT('lena256.bmp', 'QR.bmp', save=True)
+    FFT(cover, 'QR.bmp', save=True)
 
-def embedQrcodeUseDWT(message):
+def embedQrcodeUseDWT(message, cover='lena512.bmp'):
     qr = makeqr.generateQrcode(message)
     qr = makeqr.qrsizeChange(qr)
     Image.fromarray(qr).save(imgPath + 'QR.bmp')
-    DWT_color('lena256.bmp', 'QR.bmp', save=True)
+    DWT_color(cover, 'QR.bmp', save=True)
 
 def decodeQrcode():
     qr = cv2.imread(outImgPath + 'extract.bmp')
@@ -177,7 +177,7 @@ def _show(img,title='title'):
     cv2.destroyAllWindows()
 
 def main():
-    embedQrcodeUseDwt('最大で400文字埋め込むことができます。')
+    embedQrcodeUseDWT('最大で400文字埋め込むことができます。')
     print(decodeQrcode())
 
 if __name__ == '__main__':

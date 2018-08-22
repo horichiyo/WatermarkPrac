@@ -26,7 +26,7 @@ AppWidget:
                 text: 'Cover ->'
             Image:
                 allow_stretch: True
-                source: root.cover_image_src
+                source: '../Images/'+root.cover_image_src
                 center_x: self.parent.center_x
                 center_y: self.parent.center_y
             Image:
@@ -58,9 +58,9 @@ AppWidget:
                 on_press: root.extractButtonClicked()
             Button:
                 id: button3
-                text: 'Manual'
+                text: 'Change'
                 font_size: 68
-                on_press: root.manualButtonClicked()
+                on_press: root.changeButtonClicked()
             Button:
                 id: button4
                 text: 'Mode:'+root.mode
@@ -118,3 +118,25 @@ AppWidget:
                 size_hint: 0.8, 0.1
                 text: "OK"
                 on_press: root.clearButtonClicked()
+
+
+<PopupChooseFile>:
+    canvas:
+        Color:
+            rgba: 0, 0, .4, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    orientation: "vertical"
+
+    FileChooserIconView:
+        size_hint: 1, .9
+        path: root.current_dir
+        on_submit: root.select(self.selection[0])
+    BoxLayout:
+        size_hint: 1, .1
+        Button:
+            text: "Cancel"
+            background_color: 0,.5,1,1
+            on_release: root.cancel()

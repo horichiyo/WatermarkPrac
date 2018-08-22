@@ -10,6 +10,7 @@ from kivy.uix.popup import Popup
 from kivy.uix.button import Button
 from kivy.uix.boxlayout import BoxLayout
 
+import os
 from PIL import Image
 import sys
 sys.path.append('..')
@@ -29,11 +30,12 @@ class AppWidget(Widget):
     extract_message = StringProperty()
     psnr = StringProperty()
     mode = StringProperty()
+    file_path = StringProperty()
 
     def __init__(self, **kwargs):
         super(AppWidget, self).__init__(**kwargs)
         self.extract_message = '抽出した文字はここに表示されます。'
-        self.cover_image_src = '../Images/lena256.bmp'
+        self.cover_image_src = 'lena256.bmp'
         self.stego_image_src = '../Images/stegosaurus.png'
         self.psnr = ''
         self.mode = 'FFT'
@@ -43,22 +45,31 @@ class AppWidget(Widget):
         self.embed_message =  self.ids["text_box"].text
 
         if self.mode == 'FFT':
-            iw.embedQrcodeUseFFT(self.embed_message)
+            iw.embedQrcodeUseFFT(self.embed_message, cover=self.cover_image_src)
             self.stego_image_src = '../Images/result/stego_fft.bmp'
         elif self.mode == 'DWT':
-            iw.embedQrcodeUseDWT(self.embed_message)
+            iw.embedQrcodeUseDWT(self.embed_message, cover=self.cover_image_src)
             self.stego_image_src = '../Images/result/stego_dwt.bmp'
 
     def extractButtonClicked(self):
         extractMessageView = ExtractMessageView()
         self.text = 'Extract'
-        self.psnr = str(iw.psnr(self.cover_image_src, self.stego_image_src))
+        self.psnr = str(iw.psnr('../Images/'+self.cover_image_src, self.stego_image_src))
 
         extractMessageView.open()
 
-    def manualButtonClicked(self):
-        manualView = ManualView()
-        manualView.open()
+    def changeButtonClicked(self):
+        content = PopupChooseFile(select=self.selectFile, cancel=self.cancelButtonClicked)
+        self.popup = Popup(title="Select Image file", content=content)
+        self.popup.open()
+
+    def selectFile(self, file_path):
+        self.cover_image_src = os.path.basename(file_path)
+        self.popup.dismiss()
+
+    def cancelButtonClicked(self):
+        self.popup.dismiss()
+        # self.info.text = 'Cancel'
 
     def modeButtonClicked(self):
         content = ModeSelectPopUp(fft=self.useFFT, dwt=self.useDWT, text='You can select the method to use for watermarking.')
@@ -72,14 +83,6 @@ class AppWidget(Widget):
     def useDWT(self):
         self.mode = 'DWT'
         self.popup.dismiss()
-
-
-class ManualView(ModalView):
-    def __init__(self, **kwargs):
-        super(ManualView, self).__init__(**kwargs)
-
-    def clearButtonClicked(self):
-        self.dismiss()
 
 
 class ExtractMessageView(ModalView):
@@ -97,6 +100,12 @@ class ModeSelectPopUp(BoxLayout):
     text = StringProperty()
     fft  = ObjectProperty()
     dwt  = ObjectProperty()
+
+
+class PopupChooseFile(BoxLayout):
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    select = ObjectProperty(None)
+    cancel = ObjectProperty(None)
 
 
 class WatermarkDemoApp(App):
