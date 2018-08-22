@@ -14,7 +14,7 @@ AppWidget:
 
         TextInput:
             id: text_box
-            text: 'ここに埋め込む文字を入力してね'
+            text: 'Please enter the text here that you want to embed in the image.'
             size_hint_y: 0.5
             font_size: 68
             focus: True
@@ -106,8 +106,7 @@ AppWidget:
 
 
 <ExtractMessageView>:
-    size_hint: None, None
-    size: 800, 500
+    size_hint: 0.8, 1
     auto_dismiss: False
     BoxLayout:
         orientation: "vertical"
@@ -115,7 +114,7 @@ AppWidget:
             text: root.extract_message
             font_size: 30
         BoxLayout:
-            padding: 200, 100
             Button:
+                size_hint: 0.8, 0.1
                 text: "OK"
                 on_press: root.clearButtonClicked()
