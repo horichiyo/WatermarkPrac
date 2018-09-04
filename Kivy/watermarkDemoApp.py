@@ -15,7 +15,6 @@ import os
 from PIL import Image
 import sys
 sys.path.append('..')
-from Tools import makeqr
 from watermarking import imageInImageWatermarking as iw
 
 # デフォルトに使用するフォントを変更する
@@ -36,7 +35,6 @@ class AppWidget(Widget):
 
     def __init__(self, **kwargs):
         super(AppWidget, self).__init__(**kwargs)
-        self.extract_message = '抽出した文字はここに表示されます。'
         self.cover_image_src = 'lena256.bmp'
         self.cover_image_path = '../images/lena256.bmp'
         self.stego_image_src = '../Images/stegosaurus.png'

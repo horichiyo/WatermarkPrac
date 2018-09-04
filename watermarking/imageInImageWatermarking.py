@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import sys
 sys.path.append('..')
-from DiscreteWaveletTransform import dwt
 from Tools import makeqr
 import pywt
 import cv2
@@ -15,7 +14,34 @@ wavelet    = 'haar'  # wavelist.txtにどれを指定できるか書いてある
 level      = 1
 
 
-def DWT_gray(coverImageName, watermarkImageName, save=False):
+def embedQrcodeUseFFT(message, cover='lena512.bmp'):
+    qr = makeqr.generateQrcode(message)
+    qr = makeqr.qrsizeChange(qr)
+    Image.fromarray(qr).save(imgPath + 'QR.bmp')
+    _FFT(cover, 'QR.bmp', save=True)
+
+def embedQrcodeUseDWT(message, cover='lena512.bmp'):
+    qr = makeqr.generateQrcode(message)
+    qr = makeqr.qrsizeChange(qr)
+    Image.fromarray(qr).save(imgPath + 'QR.bmp')
+    _DWT_color(cover, 'QR.bmp', save=True)
+
+def decodeQrcode():
+    qr = cv2.imread(outImgPath + 'extract.bmp')
+    return makeqr.decodeQrcode(np.uint8(qr))
+
+def psnr(cover, stego):
+    coverImg = np.array(Image.open(cover), 'f')
+    stegoImg = np.array(Image.open(stego), 'f')
+    if coverImg.shape != stegoImg.shape:
+        return '?'
+    mse = np.mean((coverImg-stegoImg)**2)
+    if mse == 0:
+        return math.inf
+    PIXEL_MAX = 255.0
+    return round(20 * math.log10(PIXEL_MAX/math.sqrt(mse)), 3)
+
+def _DWT_gray(coverImageName, watermarkImageName, save=False):
     coverImage = cv2.imread(imgPath+coverImageName)
     watermarkImage = cv2.imread(imgPath+watermarkImageName)
     watermarkImage = cv2.resize(watermarkImage, (int(len(coverImage)/2), int(len(coverImage)/2)))
@@ -52,8 +78,7 @@ def DWT_gray(coverImageName, watermarkImageName, save=False):
     if save == True:
         Image.fromarray(extracted).save(outImgPath + 'extract.bmp')
 
-
-def DWT_color(coverImageName, watermarkImageName, save=False):
+def _DWT_color(coverImageName, watermarkImageName, save=False):
         coverImage = cv2.imread(imgPath+coverImageName)
         watermarkImage = cv2.imread(imgPath+watermarkImageName)
         watermarkImage = cv2.resize(watermarkImage, (int(len(coverImage)/2), int(len(coverImage)/2)))
@@ -91,8 +116,7 @@ def DWT_color(coverImageName, watermarkImageName, save=False):
         if save == True:
             Image.fromarray(extracted).save(outImgPath + 'extract.bmp')
 
-
-def FFT(coverImageName, watermarkImageName, save=False):
+def _FFT(coverImageName, watermarkImageName, save=False):
     coverImage = cv2.imread(imgPath + coverImageName)
     watermarkImage = cv2.imread(imgPath + watermarkImageName)
     watermarkImage = cv2.resize(watermarkImage, (int(len(coverImage)), int(len(coverImage))))
@@ -117,34 +141,6 @@ def FFT(coverImageName, watermarkImageName, save=False):
         # BGR -> RGBに変換
         extractImage_rgb = extractImage[:, :, ::-1].copy()
         Image.fromarray(np.uint8(extractImage_rgb)).save(outImgPath + 'extract.bmp')
-
-
-def embedQrcodeUseFFT(message, cover='lena512.bmp'):
-    qr = makeqr.generateQrcode(message)
-    qr = makeqr.qrsizeChange(qr)
-    Image.fromarray(qr).save(imgPath + 'QR.bmp')
-    FFT(cover, 'QR.bmp', save=True)
-
-def embedQrcodeUseDWT(message, cover='lena512.bmp'):
-    qr = makeqr.generateQrcode(message)
-    qr = makeqr.qrsizeChange(qr)
-    Image.fromarray(qr).save(imgPath + 'QR.bmp')
-    DWT_color(cover, 'QR.bmp', save=True)
-
-def decodeQrcode():
-    qr = cv2.imread(outImgPath + 'extract.bmp')
-    return makeqr.decodeQrcode(np.uint8(qr))
-
-def psnr(cover, stego):
-    coverImg = np.array(Image.open(cover), 'f')
-    stegoImg = np.array(Image.open(stego), 'f')
-    if coverImg.shape != stegoImg.shape:
-        return '?'
-    mse = np.mean((coverImg-stegoImg)**2)
-    if mse == 0:
-        return math.inf
-    PIXEL_MAX = 255.0
-    return round(20 * math.log10(PIXEL_MAX/math.sqrt(mse)), 3)
 
 def _calcFFT(coverMat, watermarkMat, strength):
     shiftedFFT = np.fft.fftshift(np.fft.fft2(coverMat))
@@ -177,8 +173,9 @@ def _show(img,title='title'):
     cv2.destroyAllWindows()
 
 def main():
-    embedQrcodeUseDWT('最大で400文字埋め込むことができます。')
+    embedQrcodeUseDWT('最大で400文字ぐらい埋め込むことができます。')
     print(decodeQrcode())
+
 
 if __name__ == '__main__':
     main()
